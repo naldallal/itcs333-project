@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FFFFAdmin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js'></script>
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+        <nav>
+            <ul>
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#rooms">Room Management</a></li>
+                <li><a href="#schedule">Schedule Management</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section id="dashboard">
+            <h2>Dashboard</h2>
+            <!-- Add charts, graphs, and key metrics here -->
+        </section>
+        <section id="rooms">
+            <h2>Room Management</h2>
+            <div class="room-category">
+                <div class="category-header">
+                    <h3 onclick="toggleTable('IS')">Information System Department</h3>
+                    <button onclick="addRoom('IS')">Add Room</button>
+                </div>
+                <table id="IS" class="room-table">
+                    <thead>
+                        <tr>
+                            <th>Room ID</th>
+                            <th>Room Name</th>
+                            <th>Capacity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Conference room data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="room-category">
+                <div class="category-header">
+                    <h3 onclick="toggleTable('CS')">Computer Science Department</h3>
+                    <button onclick="addRoom('CS')">Add Room</button>
+                </div>
+                <table id="CS" class="room-table">
+                    <thead>
+                        <tr>
+                            <th>Room ID</th>
+                            <th>Room Name</th>
+                            <th>Capacity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Meeting room data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="room-category">
+                <div class="category-header">
+                    <h3 onclick="toggleTable('NE')">Network Engeenering Department</h3>
+                    <button onclick="addRoom('NE')">Add Room</button>
+                </div>
+                <table id="NE" class="room-table">
+                    <thead>
+                        <tr>
+                            <th>Room ID</th>
+                            <th>Room Name</th>
+                            <th>Capacity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Private office data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <section id="schedule">
+            <h2>Schedule Management</h2>
+            <div id='calendar'></div>
+        </section>
+    </main>
+    <script src="scripts.js"></script>
+</body>
+</html>
