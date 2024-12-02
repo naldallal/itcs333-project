@@ -1,5 +1,5 @@
 <?php
-require 'db.php';
+require 'DBuserP.PHP';
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
