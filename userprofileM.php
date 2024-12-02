@@ -1,80 +1,61 @@
 <?php
-// enable user to edit its profile after log in and got access 
-// Check if user is logged in
-if (!isset($_SESSION['username'])) {
-    die("You are not logged in.");
+require 'db.php';
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
 }
 
-//  logged-in user's ID
-$user_id = $_SESSION['user_id']; 
+$user_id = $_SESSION['user_id'];
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
+$stmt->execute(['id' => $user_id]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Fetch user data
-$stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];
-    $email = $_POST['email'];
+    $password = $_POST['password'] ? password_hash($_POST['password'], PASSWORD_DEFAULT) : $user['password'];
+    $profile_picture = $user['profile_picture'];
 
-    // user img upload
-    if ($_FILES['profile_picture']['name']) {
-        $targetDir = "uploads/";
-        $targetFile = $targetDir . basename($_FILES["profile_picture"]["name"]);
-        
-        // delete  uploaded file
-        if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $targetFile)) {
-            // Update user data with profile picture
-            $stmt = $conn->prepare("UPDATE users SET username = ?, email = ?, profile_picture = ? WHERE id = ?");
-            $stmt->bind_param("sssi", $username, $email, $targetFile, $user_id);
-        } else {
-            echo "Error uploading file.";
+    if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = 'upload/';
+        $filename = uniqid() . '-' . $_FILES['profile_picture']['name'];
+        $filepath = $upload_dir . $filename;
+
+        if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $filepath)) {
+            $profile_picture = $filename;
         }
-    } else {
-        // Update user data 
-        $stmt = $conn->prepare("UPDATE users SET username = ?, email = ? WHERE id = ?");
-        $stmt->bind_param("ssi", $username, $email, $user_id);
     }
 
-    if ($stmt->execute()) {
-        header('Location: profile.php'); // Redirect the user to the profile page after updating the requireds
-        exit();
-    } else {
-        echo "Error updating profile: " . $stmt->error;
-    }
-    $stmt->close();
+    $stmt = $pdo->prepare("UPDATE users SET username = :username, password = :password, profile_picture = :profile_picture WHERE id = :id");
+    $stmt->execute([
+        'username' => $username,
+        'password' => $password,
+        'profile_picture' => $profile_picture,
+        'id' => $user_id
+    ]);
+
+    header("Location: profile.php");
 }
-
-$conn->close();
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Edit Profile</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Profile</title>
 </head>
 <body>
-    <h2>Edit Profile</h2>
-    <form action="" method="POST" enctype="multipart/form-data">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" value="<?= htmlspecialchars($user['username']) ?>" required><br><br>
-        
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required><br><br>
-        
-        <label for="profile_picture">Profile Picture:</label>
-        <input type="file" id="profile_picture" name="profile_picture"><br><br>
-        
-        <button type="submit">Update Profile</button>
+    <h1>Edit your Profile</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <label>New Username: <input type="text" name="username" value="<?= htmlspecialchars($user['username']) ?>" required></label><br>
+        <label>New Password  <input type="password" name="password"></label><br>
+        <?php if ($user['profile_picture']): ?>
+            <img src="upload/<?= htmlspecialchars($user['profile_picture']) ?>" alt="Profile Picture" width="100"><br>
+        <?php endif; ?>
+        <label> Profile Picture: <input type="file" name="profile_picture"></label><br>
+        <button type="submit">Save Changes</button>
     </form>
-
-    <?php if ($user['profile_picture']): ?>
-        <h3>Current Profile Picture:</h3>
-        <img src="<?= htmlspecialchars($user['profile_picture']) ?>" alt="Profile Picture" style="width:100px;height:auto;">
-    <?php endif; ?>
+    <a href="logout.php">Logout</a>
 </body>
 </html>
