@@ -1,0 +1,95 @@
+*,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Roboto, -apple-system, 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
+      background: #3b4465;
+    }
+
+    .forms-section {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .section-title {
+      font-size: 32px;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+
+    .form-wrapper {
+      background: #fff;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .input-block {
+      margin-bottom: 20px;
+    }
+
+    .input-block label {
+      font-size: 14px;
+      color: #a1b4b4;
+    }
+
+    .input-block input {
+      display: block;
+      width: 100%;
+      margin-top: 8px;
+      padding-right: 15px;
+      padding-left: 15px;
+      font-size: 16px;
+      line-height: 40px;
+      color: #3b4465;
+      background: #eef9fe;
+      border: 1px solid #cddbef;
+      border-radius: 2px;
+    }
+
+    .form [type='submit'] {
+      display: block;
+      width: 100%;
+      margin: 20px 0;
+      font-size: 18px;
+      line-height: 40px;
+      color: #fff;
+      background: #a7e245;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .form [type='submit']:hover {
+      background: #8bc63b;
+    }
+
+    .profile-picture {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .profile-picture img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #eef9fe;
+    }
+
+    .profile-picture input[type="file"] {
+      margin-top: 10px;
+      display: block;
+      font-size: 14px;
+      color: #3b4465;
+    }
