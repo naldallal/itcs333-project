@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> Edit User Profile </title>
+  <link rel="stylesheet" href="userprofile.css">
+
+</head>
+<body>
+  <div class="forms-section">
+    <h1 class="section-title"> User Profile </h1>
+
+    <div class="form-wrapper">
+      <form method="POST" enctype="multipart/form-data">
+        <div class="profile-picture">
+          <img src="upload/default-profile.png" alt="Current Profile Picture" id="profileImage">
+          <input type="file" name="profile_picture" accept="image/*" onchange="previewImage(event)">
+        </div>
+
+        <div class="input-block">
+          <label for="username"> New Username</label>
+          <input type="text" id="username" name="username" value="JohnDoe" required>
+        </div>
+
+        <div class="input-block">
+          <label for="password">New Password</label>
+          <input type="password" id="password" name="password" placeholder="Leave blank to keep current password">
+        </div>
+
+        <button type="submit">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // JavaScript for the profile image preview..
+    function previewImage(event) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        const output = document.getElementById('profileImage');
+        output.src = reader.result;
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+  </script>
+</body>
+</html>
