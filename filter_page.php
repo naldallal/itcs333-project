@@ -364,7 +364,7 @@ footer p {
         <h1>Room Booking System</h1>
         <nav>
             <a href="building_map.php">IT college Map</a>
-            <a href="index.php" class="active">Filter</a>
+            <a href="filter_page.php" class="active">Filter</a>
             <a href="#services">Services</a>
             <a href="#contact">Contact</a>
         </nav>
