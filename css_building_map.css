@@ -1,0 +1,187 @@
+html{
+    background-color:  #e4ceabcb;
+}
+body {
+    font-family: serif;
+}
+
+header {
+    background-color: #6f4712; /* Green */
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    margin: 3% 0;
+}
+
+a{
+    color:black;
+    text-decoration: none;
+}
+
+
+nav {
+    background-color: #333; 
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 14px 20px;
+    margin: 0 10px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+nav a:hover {
+    background-color: #575757; /* Darker on hover */
+}
+
+nav a.active {
+    background-color: #8a5c12; /* Active link color */
+}
+
+.change-view-container {
+    text-align: center;
+}
+
+.building {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.section {
+    width: 25%;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.section-1 {
+    background-color: #c18281 !important;  /* Light red */
+}
+
+.section-2 {
+    background-color: #73b473 !important;  /* Light green */
+}
+
+.section-3 {
+    background-color: #7b9dc4 !important;  /* Light blue */
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.section-title p{
+    font-size:20px;
+}
+.columns {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.column {
+    width: 48%; /* 2 columns only*/
+}
+
+.section a {
+    text-decoration: none;
+    color: #000000;
+}
+
+.section a:hover {
+    color: black;
+}
+
+.room {
+    margin-bottom: 10px;
+    background-color: #e7d4b8;
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.room:hover{
+    background-color: #d8c8a1; 
+    transform: translateY(-5px);
+}
+
+.room a{
+    color: #3b2f2b;                  /* Dark brown color for the link */
+    text-decoration: none;           
+    font-size: 16px;                 /* Adjusts font size */
+    transition: color 0.3s ease;
+}
+
+.room a:hover {
+    color: #e08e45;                  /* Changes the color toorange o n hover */
+}
+
+
+footer {
+    background-color: #6f4712; 
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    margin: 3% 0;
+}
+
+footer nav {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    flex-wrap: wrap; /* Allow wrapping */
+}
+footer nav a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    margin: 5px; /* Margin for spacing */
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+footer nav a:hover {
+    background-color: #575757; /* Darker on hover */
+}
+footer p {
+    margin: 10px 0 0; /* Space above the paragraph */
+}
+@media (max-width:786px) and (min-width: 601px){
+    
+    .section {
+        width: 32%;
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    .section-title p{
+        font-size:15px;
+    }
+
+    .room{
+        padding:5px;
+        margin-bottom:5px;
+    }
+
+    h1 {
+        font-size: 2em; /* Smaller title on small screens */
+    }
+
+    nav a {
+        padding: 10px 5px; /* Smaller padding for buttons */
+        font-size: 1.2em; /* Smaller font size */
+    }
+    
+}
+
+@media (max-width: 600px){
+    .section-title p{
+        font-size:13px;
+    }
+}
