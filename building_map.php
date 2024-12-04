@@ -50,7 +50,7 @@ try {
         <h1>Room Booking System</h1>
         <nav>
             <a href="building_map.php" class="active">IT college Map</a>
-            <a href="index.php">Filter</a>
+            <a href="filter_page.php">Filter</a>
             <a href="#services">Services</a>
             <a href="#contact">Contact</a>
         </nav>
