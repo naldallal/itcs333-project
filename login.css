@@ -7,7 +7,7 @@
 body {
 	margin: 0;
 	font-family: Roboto, -apple-system, 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
-	background: #3b4465;
+	background: #543310;
 }
 
 .forms-section {
@@ -137,7 +137,7 @@ body {
 
 @keyframes showLogin {
 	0% {
-		background: #d7e7f1;
+		background: #AF8F6F;
 		transform: translate(40%, 10px);
 	}
 	50% {
@@ -158,7 +158,7 @@ body {
 		transform: translate(0, 0);
 	}
 	100% {
-		background: #d7e7f1;
+		background: #AF8F6F;
 		transform: translate(40%, 10px);
 	}
 }
@@ -173,7 +173,7 @@ body {
 
 @keyframes showSignup {
 	0% {
-		background: #d7e7f1;
+		background: #AF8F6F;
 		transform: translate(-40%, 10px) scaleY(.8);
 	}
 	50% {
@@ -194,7 +194,7 @@ body {
 		transform: translate(0, 0) scaleY(.8);
 	}
 	100% {
-		background: #d7e7f1;
+		background: #AF8F6F;
 		transform: translate(-40%, 10px) scaleY(.8);
 	}
 }
@@ -236,7 +236,7 @@ body {
 
 .input-block label {
 	font-size: 14px;
-  color: #a1b4b4;
+  color: #9b8067;
 }
 
 .input-block input {
@@ -248,8 +248,8 @@ body {
 	font-size: 16px;
 	line-height: 40px;
 	color: #3b4465;
-  background: #eef9fe;
-  border: 1px solid #cddbef;
+  background: #cab6a3a6;
+  border: 1px solid #AF8F6F;
   border-radius: 2px;
 }
 
@@ -273,13 +273,13 @@ body {
 
 .btn-login {
 	color: #fbfdff;
-	background: #a7e245;
+	background: #74512D;
 	transform: translateX(-30%);
 }
 
 .btn-signup {
-	color: #a7e245;
+	color: #74512D;
 	background: #fbfdff;
-	box-shadow: inset 0 0 0 2px #a7e245;
+	box-shadow: inset 0 0 0 2px #74512D;
 	transform: translateX(30%);
 }
