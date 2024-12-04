@@ -72,7 +72,7 @@ try {
         <h1>Room Booking System</h1>
         <nav>
             <a href="building_map.php">IT college Map</a>
-            <a href="filter_page">Filter</a>
+            <a href="filter_page.php">Filter</a>
             <a href="#room_details" class="active">Room</a>
             <a href="#services">Services</a>
             <a href="#contact">Contact</a>
