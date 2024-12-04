@@ -1,0 +1,243 @@
+/* Global Styles */
+html, body {
+    background-color: #e4ceabcb; /* Lighter beige background */
+}
+
+body {
+    font-family: serif;
+}
+
+/* Header */
+header {
+    background-color: #6f4712; /* Deep brown header */
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    margin: 3% 0;
+}
+
+/* Navigation Bar */
+nav {
+    background-color: #333; /* Dark navigation background */
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 14px 20px;
+    margin: 0 10px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+nav a:hover {
+    background-color: #575757; /* Darker on hover */
+}
+
+nav a.active {
+    background-color: #8a5c12; /* Active link color */
+}
+
+/* Button Styling */
+button {
+    background-color: #6f4712 !important; /* Dark button color */
+    transition: background-color 0.3s ease !important;
+}
+
+button:hover {
+    background-color: #9a641df0 !important; /* Lighter color on hover */
+}
+
+/* Base Card Styling */
+.card {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-radius: 12px; /* More rounded edges */
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    transition: all 3.0s ease; /* Smooth transition */
+    cursor: pointer; /* Indicate interactivity */
+}
+
+/* Hover Styling with Color Change */
+.card:hover {
+    background: linear-gradient(135deg, #a88e6e, #c89f77); /* Gradient background */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Stronger shadow */
+    transform: translateY(-5px);
+}
+
+/* Card Content */
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: #333; /* Default text color */
+    transition: color 0.5s ease;
+}
+
+/* Change text color on card hover */
+.card:hover .card-body {
+    color: #fff; /* White text on hover for contrast */
+}
+
+/* Filter Dropdowns Layout */
+.filter-dropdowns-container {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping if space is insufficient */
+    gap: 20px; /* Space between dropdowns */
+    margin-bottom: 20px;
+}
+
+/* Filter Dropdown */
+.filter-dropdown {
+    flex: 1 1;
+    max-width: 22%; /* Limit width */
+    box-sizing: border-box;
+}
+
+/* Dropdown Button Styling */
+.dropdown-btn {
+    padding: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #f4f4f4;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    text-align: left;
+    display: block;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-btn:hover {
+    background-color: #e0e0e0; /* Darker on hover */
+}
+
+/* Dropdown Content */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 5px;
+}
+
+.filter-dropdown:hover .dropdown-content,
+.filter-dropdown .dropdown-btn:focus + .dropdown-content {
+    display: block; /* Show dropdown when hovered or button focused */
+}
+
+/* Card Layout */
+.card-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.card-col {
+    flex: 1 1 calc(33.333% - 20px); /* 3 cards per row */
+    max-width: calc(33.333% - 20px);
+    box-sizing: border-box;
+}
+
+/* Media Queries */
+
+/* Medium screens (769px to 1024px) - 2 cards per row */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .card-col {
+        flex: 1 1 48%; /* 2 cards per row */
+        max-width: 48%;
+    }
+
+    .filter-dropdown h3 {
+        font-size: 20px;
+    }
+}
+
+/* Small screens (max-width: 768px) - 1 card per row */
+@media (max-width: 768px) {
+    .card-col {
+        flex: 1 1 100%; /* 1 card per row */
+        max-width: 100%;
+    }
+
+    .filter-dropdowns-container {
+        flex-direction: column; /* Stack dropdowns vertically */
+        gap: 10px;
+    }
+
+    .filter-dropdown {
+        flex: 1 1 100%; /* Full width */
+    }
+
+    .card-body-filter {
+        flex-direction: column; /* Stack filters vertically */
+    }
+
+    h1 {
+        font-size: 2em; /* Smaller title */
+    }
+
+    nav a {
+        padding: 10px 5px; /* Smaller padding */
+        font-size: 1.2em; /* Smaller font size */
+    }
+}
+
+/* Footer */
+footer {
+    background-color: #6f4712; /* Dark footer */
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    margin: 3% 0;
+}
+
+footer nav {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    flex-wrap: wrap;
+}
+
+footer nav a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+footer nav a:hover {
+    background-color: #575757;
+}
+
+footer p {
+    margin: 10px 0 0;
+}
+
+/* Excluded Card */
+.card-exclude-card {
+    border-radius: 10px;
+    background-color: #f4f4f4;
+    box-shadow: none;
+    padding: 30px;
+    transition: none; /* Disable transition */
+}
+
+.no-room {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+}
