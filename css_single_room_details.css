@@ -1,0 +1,243 @@
+html, body{
+    background-color:  #e4ceabcb;
+}
+
+body {
+    font-family: serif;
+    background-color:  #e4ceabcb;
+}
+
+header {
+    background-color: #6f4712; /* Green */
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    margin: 3% 0;
+}
+
+nav {
+    background-color: #333; /* Dark background for nav */
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+}
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 14px 20px;
+    margin: 0 10px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+nav a:hover {
+    background-color: #575757; /* Darker on hover */
+}
+
+nav a.active {
+    background-color: #8a5c12; /* Active link color */
+}
+/* General Card Styling */
+.card {
+    border-radius: 15px;
+    background-color: #F8F4E1; /* Light cream background from your palette */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover transition */
+    margin-bottom: 30px;
+    overflow: hidden;
+    display: flex; /* side by side alignment */
+    flex-direction: column; /* stacked vertically by default */
+}
+
+a{
+    text-decoration:none;
+}
+
+.room-banner a{
+    color: #f0ce9396; 
+    transition: color 1.0s ease;
+}
+
+.room-banner a:hover{
+    color: #e7e5e1;
+}
+
+/* go back Button */
+.room-banner {
+    background-color: #9e7b4f;
+    color: #ffffff;
+    padding: 10px 0;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    border-radius: 10px 10px 0 0;
+}
+
+.back-button {
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.back-button:hover {
+    color: #F8F4E1 /* Change the color on hover */
+}
+
+/* Card Content Styling */
+.card-content {
+    display: flex; /* Aligns the image and description side by side */
+    width: 100%;
+}
+
+/* Room Image Styling */
+.room-image {
+    flex: 1; /* Allow image to take up equal space */
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.room-image img {
+    width: 100%;
+    max-width: 400px; /* Set max width to avoid image being too large */
+    height: auto;
+    border-radius: 10px;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
+}
+
+.room-image img:hover {
+    transform: scale(1.05); 
+}
+
+/* Card Body Styling */
+.card-body {
+    flex: 1; 
+    padding: 30px;
+    background-color: #ffffff; 
+    color: #4b3d29; 
+    position: relative; /* For positioning elements */
+}
+
+.card-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #5a473b; /* Medium brown for card titles */
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+    text-transform: capitalize;
+}
+
+.card-text {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 12px;
+    color: #4b3d29; 
+}
+
+.card-text strong {
+    color: #6f4f28; 
+    font-weight: 600;
+}
+
+/* "Book Now" Button */
+.btn-primary {
+    background-color: #9e7b4f; 
+    color: #ffffff;
+    padding: 12px 30px;
+    font-size: 16px;
+    border: none;
+    border-radius: 25px; 
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: all 0.4s ease-in-out;
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Hover Effect for Button */
+.btn-primary:hover {
+    background-color: #5a473b;
+    transform: translateX(-50%) scale(1.1);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-desc{
+    margin-top: 40px;
+}
+
+footer {
+    background-color: #6f4712; 
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    margin: 3% 0;
+}
+
+footer nav {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    flex-wrap: wrap; /* Allow wrapping */
+}
+footer nav a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    margin: 5px; /* Margin for spacing */
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+footer nav a:hover {
+    background-color: #575757; 
+}
+footer p {
+    margin: 10px 0 0; /* Space above the paragraph */
+}
+
+
+@media (max-width: 768px) {
+    .card-content {
+        flex-direction: column; /* Stack the content vertically on small screens */
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .room-image img {
+        width: 100%;
+        border-radius: 10px;
+    }
+
+    .btn-primary {
+        width: 100%; /*full width on smaller screens */
+        position: static; 
+        margin-top: 20px; /* Space between description and button */
+        border-radius: 50px; 
+        transition: width 0.5s ease-in-out, margin-top 0.5s ease-in-out, transform 0.5s ease-in-out;
+    }
+    
+}
+@media (max-width: 768px) {
+    .btn-desc{
+    margin-left: 30%;
+    margin-right: 30%;}
+
+    h1 {
+        font-size: 2em; /* Smaller title */
+    }
+
+    nav a {
+        padding: 10px 5px; /* Smaller padding */
+        font-size: 1.2em; /* Smaller font size */
+    }
+}
+
