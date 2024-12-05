@@ -1,36 +1,34 @@
-
 <?php
-if(isset($_GET['date'])){
-    $date= $_GET['date'];
-    $statment=$mysql->prepare("select* from booking where date = ?");
-    $statment->bind_param('s',$date);
-    $bookings= array();
-    if($statment-> execute()){
-        $result = $statment-> get_result();
-        if($result->num_rows>0){
-            while($row = $result-> fetch_assoc()){
-                $bookings[] = $row['timeslot'];
-            }
-            $statment->Close();
-        }
+// Database connection using PDO
+try {
+    $pdo = new PDO('mysql:host=localhost;dbname=my_db', 'root', '');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Could not connect to the database: " . $e->getMessage());
+}
+
+// Fetch bookings for a specific room and date
+if (isset($_GET['date']) && isset($_GET['room_id'])) {
+    $date = $_GET['date'];
+    $room_id = $_GET['room_id'];
+    $stmt = $pdo->prepare("SELECT * FROM booking WHERE date = :date AND room_id = :room_id");
+    $stmt->execute(['date' => $date, 'room_id' => $room_id]);
+    $bookings = $stmt->fetchAll(PDO::FETCH_COLUMN, 2); // Assuming 'timeslot' is the third column
+}
+
+// Handle booking submission
+if (isset($_POST['booking'])) {
+    $user_id = $_POST['user_id'];
+    $room_id = $_POST['room_id'];
+    $timeslot = $_POST['timeslot'];
+    $date = $_POST['date'];
+    $stmt = $pdo->prepare("INSERT INTO booking (user_id, room_id, date, timeslot) VALUES (:user_id, :room_id, :date, :timeslot)");
+    if ($stmt->execute(['user_id' => $user_id, 'room_id' => $room_id, 'date' => $date, 'timeslot' => $timeslot])) {
+        $message = "<div class='alert alert-success'>Booking Successful</div>";
+        $bookings[] = $timeslot;
     }
 }
 
-if(isset($_POST['booking'])){
-    $message="<div class='alert alert-success'>Booking Successfull</div>";
-    $bookings[]=$timeslot;
-}
-
-?>
-<?php
-
-
- // Define your time range and slot duration
- $start = "08:00";  // Start time of the day
- $end = "19:00";    // End time of the day
- $duration = 60;    // Slot duration in minutes
- $cleanup = 10;     // Cleanup time between slots in minutes
- 
 // Function to generate available time slots
 function timeslots($duration, $cleanup, $start, $end) {
     $start = new DateTime($start);
@@ -39,27 +37,20 @@ function timeslots($duration, $cleanup, $start, $end) {
     $cleanupinterval = new DateInterval("PT" . $cleanup . "M");
     $slots = array();
 
-    // generating slots between start and end 
     while ($start < $end) {
-        // Clone the start time for the end time of the slot
         $endPeriod = clone $start;
         $endPeriod->add($interval);
 
-        // If the end period exceeds the overall end time, break the loop
         if ($endPeriod > $end) {
             break;
         }
 
-        // Add the current slot to the slots array
         $slots[] = $start->format("H:IA") . "-" . $endPeriod->format("H:IA");
-
-        // Move start time forward by duration + cleanup time
         $start->add($interval)->add($cleanupinterval);
     }
 
     return $slots;
 }
-
 
 // Function to generate the calendar
 function build_calendar($month, $year) {
@@ -176,48 +167,54 @@ function build_calendar($month, $year) {
     <title>Calendar</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script>
+        function showBookedMessage() {
+            alert("This time slot is already booked.");
+        }
+    </script>
 </head>
 <body>
-    <div class="container">
+<div class="container">
         <h1 class="text-center">Booking System</h1><hr>
 
         <?php
-        // Get the selected month and year from the URL, or default to the current month/year
         $month = isset($_GET['month']) ? $_GET['month'] : date('m');
         $year = isset($_GET['year']) ? $_GET['year'] : date('Y');
-        $day = isset($_GET['day']) ? $_GET['day'] : null;
+        $room_id = isset($_GET['room_id']) ? $_GET['room_id'] : 1;
+        $user_id = 1; // Replace with the actual user ID from your session or authentication system
 
-        // Display the calendar first
-        echo build_calendar($month, $year);
+        echo build_calendar($month, $year, $room_id);
 
-        // If a day is selected, show available time slots
         if (isset($_GET['day'])) {
             $selectedDay = $_GET['day'];
             $date = "$year-$month-" . str_pad($selectedDay, 2, '0', STR_PAD_LEFT);
-            echo "<h3 class='text-center'>Available Time Slots for $month/$day/$year</h3><hr>";
-        // Get time slots for the selected day
+            echo "<h3 class='text-center'>Available Time Slots for Room $room_id on $month/$selectedDay/$year</h3><hr>";
             $slots = timeslots($duration, $cleanup, $start, $end);
 
-            echo "<form action='#' method='POST'>";  // Form to book the time slot
-            echo "<input type='hidden' name='date' value='$date'>";  // Hidden input for the selected date
-            $availableSlots = timeslots($duration, $cleanup, "$start", "$end");
-
+            echo "<form action='#' method='POST'>";
+            echo "<input type='hidden' name='date' value='$date'>";
+            echo "<input type='hidden' name='room_id' value='$room_id'>";
+            echo "<input type='hidden' name='user_id' value='$user_id'>"; // Include user ID in the form
             echo '<div class="row">';
-            foreach ($availableSlots as $slot) {
-                echo '<div class="col-md-3 mb-3">';
-                echo '<div class="form-group">';
-                echo '<button class="btn btn-success btn-block">' . $slot . '</button>';
-                echo '</div>';
-                echo '</div>';
-
+            foreach ($slots as $slot) {
+                if (in_array($slot, $bookings)) {
+                    echo "<div class='col-md-3 mb-3'>";
+                    echo "<div class='form-group'>";
+                    echo "<button type='button' class='btn btn-danger btn-block' onclick='showBookedMessage()'>$slot</button>";
+                    echo "</div>";
+                    echo "</div>";
+                } else {
+                    echo "<div class='col-md-3 mb-3'>";
+                    echo "<div class='form-group'>";
+                    echo "<button type='submit' class='btn btn-success btn-block' name='timeslot' value='$slot'>$slot</button>";
+                    echo "</div>";
+                    echo "</div>";
+                }
             }
             echo '</div>';
+            echo "</form>";
         }
- ?>
- 
- 
-
-
+        ?>
     </div>
 </body>
 </html>

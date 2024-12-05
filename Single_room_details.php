@@ -105,7 +105,7 @@ try {
                         </div>
                         <!-- Book Now Button -->
                          <div class="btn-desc">
-                        <a href="https://www.google.com.bh/" class="btn-primary" target="_blank">Book Now</a> </div>
+                        <a href="booking.php" class="btn-primary" target="_blank">Book Now</a> </div>
                     </div>
                 </div>
             </div>
