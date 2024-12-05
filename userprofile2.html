@@ -6,10 +6,18 @@
     <title>Profile Page</title>
 
     <!-- Custom Css -->
-    <link rel="stylesheet" href="userprofile.css">
+    <link rel="stylesheet" href="userprofile2.css">
 
     <!-- FontAwesome 5 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+    <style>
+        .editable {
+            display: none;
+        }
+        .visible {
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <!-- Navbar top -->
@@ -45,9 +53,9 @@
     <!-- Sidenav -->
     <div class="sidenav">
         <div class="profile">
-            <img src="https://imdezcode.files.wordpress.com/2020/02/imdezcode-logo.png" alt="" width="100" height="100">
+            <img id="profileImage" src="https://static-00.iconduck.com/assets.00/avatar-default-icon-2048x2048-h6w375ur.png" alt="Default Profile" width="100" height="100">
 
-            <div class="name">
+            <div class="name" id="profileName">
                 ImDezCode
             </div>
             <div class="job">
@@ -61,7 +69,7 @@
                 <hr align="center">
             </div>
             <div class="url">
-                <a href="#settings">Settings</a>
+                <a href="#booking">Booking</a>
                 <hr align="center">
             </div>
         </div>
@@ -73,13 +81,14 @@
         <h2>IDENTITY</h2>
         <div class="card">
             <div class="card-body">
-                <i class="fa fa-pen fa-xs edit"></i>
+                <i class="fa fa-pen fa-xs edit" id="editButton" onclick="toggleEdit()"></i>
                 <table>
                     <tbody>
                         <tr>
                             <td>Name</td>
                             <td>:</td>
-                            <td>XXXX</td>
+                            <td id="displayName">ImDezCode</td>
+                            <td class="editable"><input type="text" id="editName" value="ImDezCode"></td>
                         </tr>
                         <tr>
                             <td>Email</td>
@@ -91,13 +100,52 @@
                             <td>:</td>
                             <td>Information Technology</td>
                         </tr>
-                       
                     </tbody>
                 </table>
+                <div class="editable">
+                    <label for="imageUpload">Change Profile Image:</label>
+                    <input type="file" id="imageUpload" accept="image/*" onchange="previewImage(event)">
+                </div>
+                <button id="request-admin-btn" style="margin-top: 20px;">Request Admin Access</button>
             </div>
         </div>
-
     </div>
     <!-- End -->
+
+    <script>
+        function toggleEdit() {
+            const editButton = document.getElementById('editButton');
+            const displayName = document.getElementById('displayName');
+            const editName = document.getElementById('editName');
+            const editableFields = document.querySelectorAll('.editable');
+
+            editableFields.forEach(field => {
+                field.classList.toggle('visible');
+            });
+
+            if (editButton.classList.contains('fa-pen')) {
+                editButton.classList.remove('fa-pen');
+                editButton.classList.add('fa-save');
+            } else {
+                displayName.textContent = editName.value;
+                editButton.classList.remove('fa-save');
+                editButton.classList.add('fa-pen');
+            }
+        }
+
+        function previewImage(event) {
+            const profileImage = document.getElementById('profileImage');
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                profileImage.src = e.target.result;
+            };
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 </body>
 </html>
