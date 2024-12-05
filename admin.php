@@ -159,7 +159,7 @@
                 </span>
                 <span class="dashboard-item">
                     <h3>
-                        Requests Pending:<br/> <?php echo get_pending_requests(); ?>
+                        Pending Requests:<br/> <?php echo get_pending_requests(); ?>
                     </h3>
                 </span>
                 </span>
