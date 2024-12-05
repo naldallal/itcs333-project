@@ -306,7 +306,7 @@
             </div>
 
             <!-- Editing Modal for CS Department -->
-            <div id="edit-CS" class="modal">
+            <!-- <div id="edit-CS" class="modal">
                 <div class="modal-content">
                     <span onclick="closeEdit('CS',this)" style="float:right; cursor:pointer;">&times;</span>
                     <h2>Edit Room in CS Department </h2>
@@ -337,10 +337,10 @@
                         <input type="submit" name="edit_room" value="Edit Room">
                     </form>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Deleting Modal for CS Department -->
-            <div id="delete-CS" class="modal">
+            <!-- <div id="delete-CS" class="modal">
                 <div class="modal-content">
                     <span onclick="closeDelete('CS',this)" style="float:right; cursor:pointer;">&times;</span>
                     <h2>Delete Room in CS Department </h2>
@@ -352,7 +352,7 @@
                     <input type="submit" name="delete_room" value="Delete Room">
                     </form>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Adding Modal for CS Department -->
             <div id="modal-CS" class="modal">
@@ -412,7 +412,7 @@
             </div>
 
             <!-- Editing Modal for CE Department -->
-            <div id="edit-CE" class="modal">
+            <!-- <div id="edit-CE" class="modal">
                 <div class="modal-content">
                     <span onclick="closeEdit('CE',this)" style="float:right; cursor:pointer;">&times;</span>
                     <h2>Edit Room in CE Department </h2>
@@ -442,10 +442,10 @@
                         <input type="submit" name="edit_room" value="Edit Room">
                     </form>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Deleting Modal for CE Department -->
-            <div id="delete-CE" class="modal">
+            <!-- <div id="delete-CE" class="modal">
                 <div class="modal-content">
                     <span onclick="closeDelete('CE',this)" style="float:right; cursor:pointer;">&times;</span>
                     <h2>Delete Room in Computer Engineering Department </h2>
@@ -457,7 +457,7 @@
                     <input type="submit" name="delete_room" value="Delete Room">
                     </form>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Modal for CE Department -->
             <div id="modal-CE" class="modal">
