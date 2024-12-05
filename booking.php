@@ -1,31 +1,41 @@
 <?php
 // Database connection using PDO
-// try {
-    $pdo = new PDO('mysql:host=localhost;dbname= my_db', "root");
-    // $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-// } catch (PDOException $e) {
-//     die("Could not connect to the database: " . $e->getMessage());
-// }
+try {
+    global $pdo;
+    $pdo = new PDO('mysql:host=localhost;dbname=my_db', "root");
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Could not connect to the database: " . $e->getMessage());
+}
+
+// Initialize booking array
+$booking = [];
 
 // Fetch bookings for a specific room and date
 if (isset($_GET['date']) && isset($_GET['room_id'])) {
     $date = $_GET['date'];
     $room_id = $_GET['room_id'];
-    $stmt = $pdo->prepare("SELECT * FROM bookings WHERE date = :date AND room_id = :room_id");
+    $stmt = $pdo->prepare("SELECT timeslots FROM bookings WHERE date = :date AND room_id = :room_id");
     $stmt->execute(['date' => $date, 'room_id' => $room_id]);
-    $booking = $stmt->fetchAll(PDO::FETCH_COLUMN, 2); // Assuming 'timeslot' is the third column
+    $booking = $stmt->fetchAll(PDO::FETCH_COLUMN);
 }
 
 // Handle booking submission
 if (isset($_POST['bookings'])) {
     $user_id = $_POST['user_id'];
     $room_id = $_POST['room_id'];
-    $timeslot = $_POST['timeslot'];
+    $timeslots = $_POST['timeslots'];
     $date = $_POST['date'];
-    $stmt = $pdo->prepare("INSERT INTO bookings (user_id, room_id, date, timeslot) VALUES (:user_id, :room_id, :date, :timeslot)");
-    if ($stmt->execute(['user_id' => $user_id, 'room_id' => $room_id, 'date' => $date, 'timeslot' => $timeslot])) {
-        $message = "<div class='alert alert-success'>Booking Successful</div>";
-        $booking[] = $timeslot;
+
+    // Corrected SQL insert statement
+    $stmt = $pdo->prepare("INSERT INTO bookings (user_id, room_id, date, timeslots) VALUES (:user_id, :room_id, :date, :timeslots)");
+    try {
+        if ($stmt->execute(['user_id' => $user_id, 'room_id' => $room_id, 'date' => $date, 'timeslots' => $timeslots])) {
+            $message = "<div class='alert alert-success'>Booking Successful</div>";
+            $booking[] = $timeslots; // Add booked timeslot to the array
+        }
+    } catch (PDOException $e) {
+        $message = "<div class='alert alert-danger'>Booking failed: " . $e->getMessage() . "</div>";
     }
 }
 
@@ -35,7 +45,7 @@ function timeslots($duration, $cleanup, $start, $end) {
     $end = new DateTime($end);
     $interval = new DateInterval("PT" . $duration . "M");
     $cleanupinterval = new DateInterval("PT" . $cleanup . "M");
-    $slots = array();
+    $slots = [];
 
     while ($start < $end) {
         $endPeriod = clone $start;
@@ -54,94 +64,71 @@ function timeslots($duration, $cleanup, $start, $end) {
 
 // Function to generate the calendar
 function build_calendar($month, $year) {
-    // Days of the week
-    $daysOfWeek = array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
-    
-    // First day of the month
+    $daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     $firstDayOfMonth = mktime(0, 0, 0, $month, 1, $year);
-
-    // Number of days in the month
     $numberDays = date('t', $firstDayOfMonth);
-
-    // Get information about the first day of the month
     $dateComponents = getdate($firstDayOfMonth);
-
-    // Get the name of the month
     $monthName = $dateComponents['month'];
-
-    // Get the index of the first day of the month (0 = Sunday, 1 = Monday, ...)
     $dayOfWeek = $dateComponents['wday'];
 
-    // Initialize the calendar table
     $calendar = "<table class='table table-bordered'>";
     $calendar .= "<center><h2>$monthName $year</h2></center>";
 
-    // Previous Month Button (taking care of month/year boundaries)
+    // Navigation for previous and next month
     $previousMonth = $month - 1;
-    $previousYear = $year;
-    if ($previousMonth < 1) {
-        $previousMonth = 12;
-        $previousYear = $year - 1;
-    }
+    $previousYear = ($previousMonth < 1) ? $year - 1 : $year;
+    $previousMonth = ($previousMonth < 1) ? 12 : $previousMonth;
 
-    // Next Month Button (taking care of month/year boundaries)
     $nextMonth = $month + 1;
-    $nextYear = $year;
-    if ($nextMonth > 12) {
-        $nextMonth = 1;
-        $nextYear = $year + 1;
-    }
+    $nextYear = ($nextMonth > 12) ? $year + 1 : $year;
+    $nextMonth = ($nextMonth > 12) ? 1 : $nextMonth;
 
-    // Add navigation buttons with correct query parameters 
+    // Navigation buttons
     $calendar .= "<div class='calendar-nav'>";
     $calendar .= "<a class='btn btn-xs btn-primary' href='?month=$previousMonth&year=$previousYear'>Previous Month</a>";
     $calendar .= "<a class='btn btn-xs btn-primary' href='?month=" . date('m') . "&year=" . date('Y') . "'>Current Month</a>";
     $calendar .= "<a class='btn btn-xs btn-primary' href='?month=$nextMonth&year=$nextYear'>Next Month</a>";
     $calendar .= "</div>";
-    
-    // Calendar header (days of the week)
+
+    // Calendar header
     $calendar .= "<tr>";
     foreach ($daysOfWeek as $day) {
         $calendar .= "<th class='header'>$day</th>";
     }
     $calendar .= "</tr><tr>";
 
-    // Add empty cells for the days before the first day of the month
+    // Empty cells before the first day of the month
     if ($dayOfWeek > 0) {
         for ($k = 0; $k < $dayOfWeek; $k++) {
             $calendar .= "<td class='empty'></td>";
         }
     }
 
-    // Start filling in the days
+    // Fill in the days
     $currentDay = 1;
-    $month = str_pad($month, 2, "0", STR_PAD_LEFT);  // Ensure month is always 2 digits
+    $month = str_pad($month, 2, "0", STR_PAD_LEFT);
 
     while ($currentDay <= $numberDays) {
-        // If we reached the 7th column (Saturday), start a new row
         if ($dayOfWeek == 7) {
             $dayOfWeek = 0;
-            $calendar .= "</tr><tr>";  // Start a new row
+            $calendar .= "</tr><tr>";
         }
 
-        // Format the date
-        $currentDayRel = str_pad($currentDay, 2, "0", STR_PAD_LEFT); // Add leading zero if needed
+        $currentDayRel = str_pad($currentDay, 2, "0", STR_PAD_LEFT);
         $date = "$year-$month-$currentDayRel";
-
-        // Determine if the date is today or past
         $todayClass = ($date == date('Y-m-d')) ? 'today' : '';
+
         if ($date < date('Y-m-d')) {
             $calendar .= "<td><h4>$currentDay</h4><button class='btn btn-danger btn-xs'>N/A</button></td>";
         } else {
-            $calendar .= "<td class='$todayClass'><h4>$currentDay</h4><a href='?month=$month&year=$year&day=$currentDay' class='btn btn-success btn-xs'>Book</a></td>";
+            $calendar .= "<td class='$todayClass'><h4>$currentDay</h4><a href='?month=$month&year=$year&day=$currentDay&room_id=1' class='btn btn-success btn-xs'>Book</a></td>"; // Adjust room_id as needed
         }
 
-        // Increment the day and dayOfWeek
         $currentDay++;
         $dayOfWeek++;
     }
 
-    // Complete the last row with empty cells if necessary
+    // Complete the last row with empty cells
     if ($dayOfWeek != 7) {
         $remainingDays = 7 - $dayOfWeek;
         for ($i = 0; $i < $remainingDays; $i++) {
@@ -149,14 +136,10 @@ function build_calendar($month, $year) {
         }
     }
 
-    // Close the last row and table
-    $calendar .= "</tr>";
-    $calendar .= "</table>";
+    $calendar .= "</tr></table>";
 
     return $calendar;
 }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -164,7 +147,7 @@ function build_calendar($month, $year) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendar</title>
+    <title>Booking System</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script>
@@ -175,46 +158,51 @@ function build_calendar($month, $year) {
 </head>
 <body>
 <div class="container">
-        <h1 class="text-center">Booking System</h1><hr>
+    <h1 class="text-center">Booking System</h1><hr>
 
-        <?php
-        $month = isset($_GET['month']) ? $_GET['month'] : date('m');
-        $year = isset($_GET['year']) ? $_GET['year'] : date('Y');
-        $room_id = isset($_GET['room_id']) ? $_GET['room_id'] : 1;
-        $user_id = 1; // Replace with the actual user ID from your session or authentication system
+    <?php
+    $month = isset($_GET['month']) ? (int)$_GET['month'] : date('m');
+    $year = isset($_GET['year']) ? (int)$_GET['year'] : date('Y');
+    $room_id = isset($_GET['room_id']) ? (int)$_GET['room_id'] : 1;
+    $user_id = 1; // Replace with actual user ID from your session or authentication
 
-        echo build_calendar($month, $year, $room_id);
+    echo build_calendar($month, $year);
 
-        if (isset($_GET['day'])) {
-            $selectedDay = $_GET['day'];
-            $date = "$year-$month-" . str_pad($selectedDay, 2, '0', STR_PAD_LEFT);
-            echo "<h3 class='text-center'>Available Time Slots for Room $room_id on $month/$selectedDay/$year</h3><hr>";
-            $slots = timeslots($duration, $cleanup, $start, $end);
+    if (isset($_GET['day'])) {
+        $selectedDay = (int)$_GET['day'];
+        $date = "$year-$month-" . str_pad($selectedDay, 2, '0', STR_PAD_LEFT);
+        echo "<h3 class='text-center'>Available Time Slots for Room $room_id on $month/$selectedDay/$year</h3><hr>";
 
-            echo "<form action='#' method='POST'>";
-            echo "<input type='hidden' name='date' value='$date'>";
-            echo "<input type='hidden' name='room_id' value='$room_id'>";
-            echo "<input type='hidden' name='user_id' value='$user_id'>"; // Include user ID in the form
-            echo '<div class="row">';
-            foreach ($slots as $slot) {
-                if (in_array($slot, $booking)) {
-                    echo "<div class='col-md-3 mb-3'>";
-                    echo "<div class='form-group'>";
-                    echo "<button type='button' class='btn btn-danger btn-block' onclick='showBookedMessage()'>$slot</button>";
-                    echo "</div>";
-                    echo "</div>";
-                } else {
-                    echo "<div class='col-md-3 mb-3'>";
-                    echo "<div class='form-group'>";
-                    echo "<button type='submit' class='btn btn-success btn-block' name='timeslot' value='$slot'>$slot</button>";
-                    echo "</div>";
-                    echo "</div>";
-                }
+        // Define duration and cleanup times
+        $duration = 60; // Duration of each slot in minutes
+        $cleanup = 10; // Cleanup time in minutes
+        $start = "08:00"; // Start time
+        $end = "18:00"; // End time
+        $slots = timeslots($duration, $cleanup, $start, $end);
+
+        echo '<div class="row">';
+        foreach ($slots as $slot) {
+            echo "<form method='POST' class='col-md-3 mb-3'>"; // Adjust column width as needed
+            echo "<input type='hidden' id='date' name='date' value='$date'>";
+            echo "<input type='hidden' id='room_id' name='room_id' value='$room_id'>";
+            echo "<input type='hidden' id='user_id' name='user_id' value='$user_id'>";
+            echo "<input type='hidden' id='timeslot' name='timeslot' value='$slot'>";
+
+            if (in_array($slot, $booking)) {
+                echo "<button type='button' class='btn btn-danger btn-block' onclick='showBookedMessage()'>$slot</button>";
+            } else {
+                echo "<button type='submit' class='btn btn-success btn-block' name='bookings' value='$slot'>$slot</button>";
             }
-            echo '</div>';
             echo "</form>";
         }
-        ?>
-    </div>
+        echo '</div>';
+    }
+
+    // Display message if set
+    if (isset($message)) {
+        echo $message;
+    }
+    ?>
+</div>
 </body>
 </html>
