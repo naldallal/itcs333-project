@@ -11,21 +11,21 @@ try {
 if (isset($_GET['date']) && isset($_GET['room_id'])) {
     $date = $_GET['date'];
     $room_id = $_GET['room_id'];
-    $stmt = $pdo->prepare("SELECT * FROM booking WHERE date = :date AND room_id = :room_id");
+    $stmt = $pdo->prepare("SELECT * FROM bookings WHERE date = :date AND room_id = :room_id");
     $stmt->execute(['date' => $date, 'room_id' => $room_id]);
-    $bookings = $stmt->fetchAll(PDO::FETCH_COLUMN, 2); // Assuming 'timeslot' is the third column
+    $booking = $stmt->fetchAll(PDO::FETCH_COLUMN, 2); // Assuming 'timeslot' is the third column
 }
 
 // Handle booking submission
-if (isset($_POST['booking'])) {
+if (isset($_POST['bookings'])) {
     $user_id = $_POST['user_id'];
     $room_id = $_POST['room_id'];
     $timeslot = $_POST['timeslot'];
     $date = $_POST['date'];
-    $stmt = $pdo->prepare("INSERT INTO booking (user_id, room_id, date, timeslot) VALUES (:user_id, :room_id, :date, :timeslot)");
+    $stmt = $pdo->prepare("INSERT INTO bookings (user_id, room_id, date, timeslot) VALUES (:user_id, :room_id, :date, :timeslot)");
     if ($stmt->execute(['user_id' => $user_id, 'room_id' => $room_id, 'date' => $date, 'timeslot' => $timeslot])) {
         $message = "<div class='alert alert-success'>Booking Successful</div>";
-        $bookings[] = $timeslot;
+        $booking[] = $timeslot;
     }
 }
 
@@ -197,7 +197,7 @@ function build_calendar($month, $year) {
             echo "<input type='hidden' name='user_id' value='$user_id'>"; // Include user ID in the form
             echo '<div class="row">';
             foreach ($slots as $slot) {
-                if (in_array($slot, $bookings)) {
+                if (in_array($slot, $booking)) {
                     echo "<div class='col-md-3 mb-3'>";
                     echo "<div class='form-group'>";
                     echo "<button type='button' class='btn btn-danger btn-block' onclick='showBookedMessage()'>$slot</button>";
