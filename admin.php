@@ -42,7 +42,7 @@
             new Chart(ctx, {
                 type: 'pie',
                 data: {
-                    labels: ['Information System', 'Computer Science', 'Network Engineering'],
+                    labels: ['Information System', 'Computer Science', 'Computer Engineering'],
                     datasets: [{
                         label: '# of classes',
                         data: data,
@@ -68,7 +68,7 @@
             var data = [
                 <?php echo get_graph('IS'); ?>,
                 <?php echo get_graph('CS'); ?>,
-                <?php echo get_graph('NE'); ?>
+                <?php echo get_graph('CE'); ?>
             ];
             renderPieChart(data);
         }
@@ -388,10 +388,10 @@
 
             <div class="room-category">
                 <div class="category-header">
-                    <h3 onclick="toggleTable('NE')">Network Engineering Department</h3>
-                    <button onclick="showAddForm('NE')">Add Room</button>
+                    <h3 onclick="toggleTable('CE')">Computer Engineering Department</h3>
+                    <button onclick="showAddForm('CE')">Add Room</button>
                 </div>
-                <table id="NE" class="room-table">
+                <table id="CE" class="room-table">
                     <thead>
                         <tr>
                             <th>Room ID</th>
@@ -405,17 +405,17 @@
                     </thead>
                     <tbody>
                     <?php
-                        get_table('NE');
+                        get_table('CE');
                     ?>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Editing Modal for NE Department -->
-            <div id="edit-NE" class="modal">
+            <!-- Editing Modal for CE Department -->
+            <div id="edit-CE" class="modal">
                 <div class="modal-content">
-                    <span onclick="closeEdit('NE',this)" style="float:right; cursor:pointer;">&times;</span>
-                    <h2>Edit Room in NE Department </h2>
+                    <span onclick="closeEdit('CE',this)" style="float:right; cursor:pointer;">&times;</span>
+                    <h2>Edit Room in CE Department </h2>
                     <form method="post">
                         <label for="room_num">Room Number:</label>
                         <input type="number" id="eroom_num" name="room_num" disabled><br>
@@ -438,32 +438,32 @@
                             <input type="checkbox" id="whiteboard" name="equipment[]" value="Whiteboard">Whiteboard<br/>
                             <input type="checkbox" id="computers" name="equipment[]" value="Computers">Computers<br/>
                         </checkbox>                       
-                        <input type="hidden" name="department" value="NE">
+                        <input type="hidden" name="department" value="CE">
                         <input type="submit" name="edit_room" value="Edit Room">
                     </form>
                 </div>
             </div>
 
-            <!-- Deleting Modal for NE Department -->
-            <div id="delete-NE" class="modal">
+            <!-- Deleting Modal for CE Department -->
+            <div id="delete-CE" class="modal">
                 <div class="modal-content">
-                    <span onclick="closeDelete('NE',this)" style="float:right; cursor:pointer;">&times;</span>
-                    <h2>Delete Room in NE Department </h2>
+                    <span onclick="closeDelete('CE',this)" style="float:right; cursor:pointer;">&times;</span>
+                    <h2>Delete Room in Computer Engineering Department </h2>
                     <form method="post">
                     <label for="delete-room_num">Room Number:</label>
                     <input type="hidden" id="ddnumroom" name="ddnumroom">
                     <input type="number" id="delete-room_num" name="room_num" disabled><br>
-                    <input type="hidden" name="department" value="NE">
+                    <input type="hidden" name="department" value="CE">
                     <input type="submit" name="delete_room" value="Delete Room">
                     </form>
                 </div>
             </div>
 
-            <!-- Modal for NE Department -->
-            <div id="modal-NE" class="modal">
+            <!-- Modal for CE Department -->
+            <div id="modal-CE" class="modal">
                 <div class="modal-content">
-                    <span onclick="closeModal('NE')" style="float:right; cursor:pointer;">&times;</span>
-                    <h2>Add Room for NE Department</h2>
+                    <span onclick="closeModal('CE')" style="float:right; cursor:pointer;">&times;</span>
+                    <h2>Add Room for Computer Engineering Department</h2>
                     <form method="post">
                     <label for="room_num">Room Number:</label>
                         <input type="number" id="room_num" name="room_num" required><br>
@@ -485,7 +485,7 @@
                             <input type="checkbox" id="equipment" name="equipment[]" value="Whiteboard">Whiteboard<br/>
                             <input type="checkbox" id="equipment" name="equipment[]" value="Computers">Computers<br/>
                         </checkbox>                                
-                        <input type="hidden" name="department" value="NE">
+                        <input type="hidden" name="department" value="CE">
                         <input type="submit" name="add_room" value="Add Room">
                     </form>
                 </div>
