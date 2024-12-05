@@ -186,7 +186,7 @@ function build_calendar($month, $year) {
             echo "<input type='hidden' id='date' name='date' value='$date'>";
             echo "<input type='hidden' id='room_id' name='room_id' value='$room_id'>";
             echo "<input type='hidden' id='user_id' name='user_id' value='$user_id'>";
-            echo "<input type='hidden' id='timeslot' name='timeslot' value='$slot'>";
+            echo "<input type='hidden' id='timeslots' name='timeslots' value='$slot'>";
 
             if (in_array($slot, $booking)) {
                 echo "<button type='button' class='btn btn-danger btn-block' onclick='showBookedMessage()'>$slot</button>";

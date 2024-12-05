@@ -10,60 +10,55 @@
 <body>
     <h1 id="main_title">BOOKING LIST</h1>
     <br>
-    <table class="table table-hover table-border table-striped">
+    <table class="table table-hover table-bordered table-striped">
         <thead>
             <tr id="head_titles">
                 <th>BOOK ID</th>
                 <th>USER ID</th>
                 <th>ROOM NUM</th>
-                <th>SLOT TIME</th>
+                <th>DATE</th>
+                <th>TIME SLOTS</th>
                 <th>ACTION</th>
             </tr>
         </thead>
         <tbody>
             <?php
-            // Database connection
+            // Database connection using PDO
             $servername = "localhost";
             $username = "root";
             $password = "";
-            $db = "booking";
+            $db = "my_db";
 
-            // Create connection
-            $connection = new mysqli($servername, $username, $password, $db);
+            try {
+                $connection = new PDO("mysql:host=$servername;dbname=$db", $username, $password);
+                $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            // Error check
-            if ($connection->connect_error) {
-                die("Connection failed: " . $connection->connect_error);
+                // SQL query to fetch data
+                $sql = "SELECT * FROM bookings"; 
+                $stmt = $connection->prepare($sql);
+                $stmt->execute();
+
+                // Loop through each row and display the data
+                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    echo "<tr>
+                            <td>" . htmlspecialchars($row['booking_id']) . "</td>
+                            <td>" . htmlspecialchars($row['user_id']) . "</td>
+                            <td>" . htmlspecialchars($row['room_id']) . "</td>
+                            <td>" . htmlspecialchars($row['date']) . "</td>
+                            <td>" . htmlspecialchars($row['timeslots']) . "</td>
+                            <td>
+                             <a class='btn btn-primary btn-sm' href='cancel_booking.php?id=" . htmlspecialchars($row['booking_id']) . "'>Cancel</a>
+                            </td>
+                          </tr>";
+                }
+
+            } catch (PDOException $e) {
+                die("Connection failed: " . $e->getMessage());
             }
 
-            // SQL query to fetch data
-            $sql = "SELECT * FROM my_booking"; // assuming 'booking' is the correct table name
-            $result = $connection->query($sql);
-
-            // Error handling for query
-            if (!$result) {
-                die("Invalid query: " . $connection->error);
-            }
-
-            // Loop through each row and display the data
-            while ($row = $result->fetch_assoc()) {
-                echo "<tr>
-                        <td>" . $row['id'] . "</td>
-                        <td>" . $row['user_id'] . "</td>
-                        <td>" . $row['room_id'] . "</td>
-                        <td>" . $row['timeslot'] . "</td>
-                        <td>
-        
-                         <a class='btn btn-primary btn-sm' href='cancel_booking.php?id=" . $row['id'] . "'>Cancel</a>
-                        </td>
-                      </tr>";
-            }
-
-            // Close the database connection
-            $connection->close();
+            
+            $connection = null;
             ?>
-
-        
         </tbody>
     </table>
 </body>
