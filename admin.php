@@ -491,10 +491,6 @@
                 </div>
             </div>
         </section>
-        <section id="schedule">
-            <h2>Schedule Management</h2>
-            <div id='calendar'></div>
-        </section>
     </main>
     <script src="adminscripts.js"></script>
 </body>
