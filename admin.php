@@ -1,6 +1,6 @@
 <?php 
  global $pdo; 
- $pdo = new PDO('mysql:host=localhost;dbname=db;charset=utf8mb4', 'root'); 
+ $pdo = new PDO('mysql:host=localhost;dbname=my_db;charset=utf8mb4', 'root'); 
  // Include the functions file 
  include 'adminfunc.php'; 
 ?>
@@ -86,6 +86,8 @@
             var roomType = row.cells[1].innerText;
             var capacity = row.cells[2].innerText;
             var equipment = row.cells[3].innerText;
+            var available_from = row.cells[4].innerText;
+            var available_to = row.cells[5].innerText;
 
             document.getElementById('eroom_num').value = roomId;
             document.getElementById('room_num').value = roomId; // Ensure hidden field is also set
@@ -106,6 +108,8 @@
             document.getElementById('projector').checked = itemsArray.includes("Projector");
             document.getElementById('whiteboard').checked = itemsArray.includes("Whiteboard");
             document.getElementById('computers').checked = itemsArray.includes("Computers");
+            document.getElementById('available_from').value = available_from;
+            document.getElementById('available_to').value = available_to;
         }
         function closeEdit(department){
             document.getElementById('edit-' + department).style.display = 'none';
@@ -177,6 +181,8 @@
                             <th>Room Type</th>
                             <th>Capacity</th>
                             <th>Equipment</th>
+                            <th>Available From</th>
+                            <th>Available To</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -214,13 +220,17 @@
                             <input type="checkbox" id="projector" name="equipment[]" value="Projector">Projector<br/>
                             <input type="checkbox" id="whiteboard" name="equipment[]" value="Whiteboard">Whiteboard<br/>
                             <input type="checkbox" id="computers" name="equipment[]" value="Computers">Computers<br/>
-                        </checkbox>                       
+                        </checkbox>
+                        <label for="available_from">Available From  </label>
+                        <input type="time" id="available_from" name = "available_from" requierd><br/>
+                        <label for="available_to">Available To  </label>
+                        <input type="time" id="available_to" name = "available_to" requierd> <br/>
                         <input type="hidden" name="department" value="IS">
                         <input type="submit" name="edit_room" value="Edit Room">
                     </form>
                 </div>
             </div>
-
+            
             <!-- Deleting Modal for IS Department -->
             <div id="delete-IS" class="modal">
                 <div class="modal-content">
@@ -259,7 +269,11 @@
                             <input type="checkbox" id="equipment" name="equipment[]" value="Projector">Projector<br/>
                             <input type="checkbox" id="equipment" name="equipment[]" value="Whiteboard">Whiteboard<br/>
                             <input type="checkbox" id="equipment" name="equipment[]" value="Computers">Computers<br/>
-                        </checkbox>                                  
+                        </checkbox>   
+                        <label for="available_from">Available From  </label>
+                        <input type="time" name="available_from" value="08:00" requierd>
+                        <label for="available_to">Available To  </label>
+                        <input type="time" name="available_to" value="18:00" requierd>                               
                         <input type="hidden" name="department" value="IS">
                         <input type="submit" name="add_room" value="Add Room">
                     </form>
@@ -278,6 +292,8 @@
                             <th>Room Type</th>
                             <th>Capacity</th>
                             <th>Equipment</th>
+                            <th>Available From</th>
+                            <th>Available To</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -315,7 +331,8 @@
                             <input type="checkbox" id="projector" name="equipment[]" value="Projector">Projector<br/>
                             <input type="checkbox" id="whiteboard" name="equipment[]" value="Whiteboard">Whiteboard<br/>
                             <input type="checkbox" id="computers" name="equipment[]" value="Computers">Computers<br/>
-                        </checkbox>                       
+                        </checkbox>
+                                               
                         <input type="hidden" name="department" value="CS">
                         <input type="submit" name="edit_room" value="Edit Room">
                     </form>
@@ -381,6 +398,8 @@
                             <th>Room Type</th>
                             <th>Capacity</th>
                             <th>Equipment</th>
+                            <th>Available From</th>
+                            <th>Available To</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
