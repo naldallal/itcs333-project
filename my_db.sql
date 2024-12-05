@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 01, 2024 at 01:50 PM
+-- Generation Time: Dec 05, 2024 at 09:30 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `db`
+-- Database: `my_db`
 --
 
 -- --------------------------------------------------------
@@ -31,10 +31,8 @@ CREATE TABLE `bookings` (
   `booking_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `room_id` int(11) NOT NULL,
-  `start_time` datetime NOT NULL,
-  `end_time` datetime NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `date` date NOT NULL,
+  `timeslots` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -45,30 +43,28 @@ CREATE TABLE `bookings` (
 
 CREATE TABLE `rooms` (
   `room_num` int(11) NOT NULL,
-  `department` varchar(30) NOT NULL,
+  `department` varchar(2) NOT NULL,
   `capacity` int(11) NOT NULL,
   `equipment` text DEFAULT NULL,
   `type` enum('lecture','seminar','lab','meeting') DEFAULT 'lecture',
   `available_from` time DEFAULT '08:00:00',
-  `available_to` time DEFAULT '18:00:00',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `available_to` time DEFAULT '18:00:00'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Table structure for table `user`
 --
 
-CREATE TABLE `users` (
+CREATE TABLE `user` (
   `id` int(11) NOT NULL,
   `email` varchar(30) NOT NULL,
   `pass` varchar(64) NOT NULL,
   `Fname` varchar(20) DEFAULT NULL,
   `Lname` varchar(20) DEFAULT NULL,
-  `role` enum('user','admin') DEFAULT 'user',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `role` enum('user','admin','pending') DEFAULT 'user',
+  `profil_pic` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -90,9 +86,9 @@ ALTER TABLE `rooms`
   ADD PRIMARY KEY (`room_num`);
 
 --
--- Indexes for table `users`
+-- Indexes for table `user`
 --
-ALTER TABLE `users`
+ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
@@ -107,9 +103,9 @@ ALTER TABLE `bookings`
   MODIFY `booking_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT for table `user`
 --
-ALTER TABLE `users`
+ALTER TABLE `user`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -120,7 +116,7 @@ ALTER TABLE `users`
 -- Constraints for table `bookings`
 --
 ALTER TABLE `bookings`
-  ADD CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `bookings_ibfk_2` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`room_num`) ON DELETE CASCADE;
 COMMIT;
 
