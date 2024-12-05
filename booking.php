@@ -1,11 +1,11 @@
 <?php
 // Database connection using PDO
-try {
-    $pdo = new PDO('mysql:host=localhost;dbname=my_db', 'root', '');
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Could not connect to the database: " . $e->getMessage());
-}
+// try {
+    $pdo = new PDO('mysql:host=localhost;dbname= my_db', "root");
+    // $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+// } catch (PDOException $e) {
+//     die("Could not connect to the database: " . $e->getMessage());
+// }
 
 // Fetch bookings for a specific room and date
 if (isset($_GET['date']) && isset($_GET['room_id'])) {
