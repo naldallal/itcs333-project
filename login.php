@@ -1,126 +1,86 @@
 <?php
-session_start();
+// Configuration
+$db_host = '127.0.0.1';
+$db_username = 'your_username';
+$db_password = 'your_password';
+$db_name = 'my_db';
 
-$servername = "localhost";
-$username = "your_username";
-$password = "your_password";
-$dbname = "your_database";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Connect to the database
+$conn = new mysqli($db_host, $db_username, $db_password, $db_name);
 
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
- // Create tables if they don't exist
-  $sql = "CREATE TABLE IF NOT EXISTS users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(255),
-    password VARCHAR(255),
-    email VARCHAR(255),
-    role VARCHAR(255) DEFAULT 'user'
-  )";
-
-  $conn->query($sql);
-
-  $sql = "CREATE TABLE IF NOT EXISTS admins (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(255),
-    password VARCHAR(255),
-    email VARCHAR(255),
-    role VARCHAR(255) DEFAULT 'admin'
-  )";
-
-  $conn->query($sql);
-
-
-// Register user
-if (isset($_POST['register'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    $email = $_POST['email'];
-
-    // Validate email
-    if (substr($email, -12) !== '@edu.uob.bh') {
-        echo "Invalid email address. Email must end with '@edu.uob.bh'.";
-    } else {
-        // Hash the password
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-        // Insert data into database
-        $sql = "INSERT INTO users (username, password, email) VALUES ('$username', '$hashed_password', '$email')";
-        if ($conn->query($sql) === TRUE) {
-            echo "Registration successful!";
-        } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
-        }
-    }
-}
-
-// Login user
-if (isset($_POST['login'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-
-    // Query database for user
-    $sql = "SELECT * FROM users WHERE username = '$username'";
-    $result = $conn->query($sql);
-
+// Function to authenticate user
+function authenticate_user($email, $password) {
+    global $conn;
+    $query = "SELECT * FROM user WHERE email = '$email' AND pass = '$password'";
+    $result = $conn->query($query);
     if ($result->num_rows > 0) {
-        // Get user data
-        $row = $result->fetch_assoc();
-        $hashed_password = $row['password'];
-
-        // Check password
-        if (password_verify($password, $hashed_password)) {
-            // Login successful!
-            $_SESSION['username'] = $username;
-            echo "Login successful!";
-        } else {
-            echo "Invalid password";
-        }
+        return true;
     } else {
-        echo "Invalid username";
+        return false;
     }
 }
 
-// Logout user
-if (isset($_POST['logout'])) {
-    session_unset();
-    session_destroy();
-    echo "Logged out!";
+// Function to check if user is admin
+function is_admin($email) {
+    global $conn;
+    $query = "SELECT role FROM user WHERE email = '$email'";
+    $result = $conn->query($query);
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        if ($row['role'] == 'admin') {
+            return true;
+        }
+    }
+    return false;
 }
 
-// Check if user is logged in
-if (isset($_SESSION['username'])) {
-    echo "Welcome, " . $_SESSION['username'] . "!";
-} else {
-    echo "You are not logged in.";
+// Handle login form submission
+if (isset($_POST['login'])) {
+    $email = $_POST['login-email'];
+    $password = $_POST['login-password'];
+    if (authenticate_user($email, $password)) {
+        if (is_admin($email)) {
+            // Redirect to admin dashboard
+            header('Location: admin_dashboard.php');
+            exit;
+        } else {
+            // Redirect to user dashboard
+            header('Location: user_dashboard.php');
+            exit;
+        }
+    } else {
+        // Display error message
+        echo 'Invalid email or password';
+    }
 }
 
+// Handle registration form submission
+if (isset($_POST['signup'])) {
+    $email = $_POST['signup-email'];
+    $password = $_POST['signup-password'];
+    $confirm_password = $_POST['signup-password-confirm'];
+    if ($password == $confirm_password) {
+        // Insert new user into database
+        $query = "INSERT INTO user (email, pass) VALUES ('$email', '$password')";
+        if ($conn->query($query) === TRUE) {
+            // Redirect to login page
+            header('Location: login.php');
+            exit;
+        } else {
+            // Display error message
+            echo 'Error creating user';
+        }
+    } else {
+        // Display error message
+        echo 'Passwords do not match';
+    }
+}
+
+// Close database connection
 $conn->close();
 ?>
-
-<form action="" method="post">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required><br><br>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required><br><br>
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required><br><br>
-    <input type="submit" name="register" value="Register">
-</form>
-
-<form action="" method="post">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required><br><br>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required><br><br>
-    <input type="submit" name="login" value="Login">
-</form>
-
-<form action="" method="post">
-    <input type="submit" name="logout" value="Logout">
-</form>
