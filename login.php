@@ -14,6 +14,28 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+ // Create tables if they don't exist
+  $sql = "CREATE TABLE IF NOT EXISTS users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(255),
+    password VARCHAR(255),
+    email VARCHAR(255),
+    role VARCHAR(255) DEFAULT 'user'
+  )";
+
+  $conn->query($sql);
+
+  $sql = "CREATE TABLE IF NOT EXISTS admins (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(255),
+    password VARCHAR(255),
+    email VARCHAR(255),
+    role VARCHAR(255) DEFAULT 'admin'
+  )";
+
+  $conn->query($sql);
+
+
 // Register user
 if (isset($_POST['register'])) {
     $username = $_POST['username'];
