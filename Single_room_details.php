@@ -1,19 +1,22 @@
 <?php
 try {
-    // database connection
-    $db = new PDO("mysql:host=localhost;dbname=roomsdetailsdatabase", "root", "");
+    // Database connection
+    $db = new PDO("mysql:host=localhost;dbname=my_db", "root", "");
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Room ID to fetch the single room details (could be passed via GET)
-    $room_id = isset($_GET['room_id']) ? $_GET['room_id'] : null;
+    // Room number to fetch the single room details (could be passed via GET)
+    $room_number = isset($_GET['room_num']) ? (int)$_GET['room_num'] : null; // Sanitize the input
 
-    // Query to fetch room details
-    $query = "SELECT rooms.*, sections.section_name AS department_name
-              FROM rooms
-              JOIN sections ON rooms.section_id = sections.section_id
-              WHERE rooms.room_id = :room_id"; 
+    // Check if the room number is provided
+    if (!$room_number) {
+        echo "Room number is missing.";
+        exit();
+    }
+
+    // Query to fetch room details based on the room number
+    $query = "SELECT * FROM rooms WHERE room_num = :room_num"; // Add WHERE clause to filter by room_num
     $stmt = $db->prepare($query);
-    $stmt->bindParam(':room_id', $room_id, PDO::PARAM_INT);  // Bind room_id parameter to prevent SQL injection
+    $stmt->bindParam(':room_num', $room_number, PDO::PARAM_INT);  // Bind room_number parameter to prevent SQL injection
     $stmt->execute();
 
     // Fetch the room data
@@ -24,25 +27,24 @@ try {
         exit();
     }
 
-    // Decode the equipment list once
-    $decodedEquipmentList = json_decode($room['equipment_list'], true);
-    if (!$decodedEquipmentList) {
-        $decodedEquipmentList = []; // If decoding fails, use an empty array
-    }
+    // Split the equipment list into an array by commas
+    $equipmentList = explode(",", $room['equipment']); // Convert string to array based on commas
+    // Trim any extra spaces around equipment names
+    $equipmentList = array_map('trim', $equipmentList);
 
     // Function to generate equipment descriptions
     function EquipmentDescription($equipmentList) {
         $descriptions = [];
-        
+
         // Check for specific equipment and display descriptions
         if (in_array("Computers", $equipmentList)) {
             $descriptions[] = "<strong>Computers: </strong> Each seat is equipped with a computer, providing students with easy access to digital resources during class activities. <br>";
         }
-        
+
         if (in_array("Projector", $equipmentList)) {
             $descriptions[] = "<strong>Projector:</strong> The room is fitted with a high-quality projector, perfect for displaying presentations, videos, or slideshows during lessons. <br>";
         }
-    
+
         if (in_array("Whiteboard", $equipmentList)) {
             $descriptions[] = "<strong>Whiteboard:</strong> A spacious whiteboard is available for writing or drawing to assist in teaching and discussions. <br>";
         }
@@ -63,12 +65,10 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css_single_room_details.css">
     <title>Room Details</title>
-    
 </head>
 
-
 <body>
-<header>
+    <header>
         <h1>Room Booking System</h1>
         <nav>
             <a href="building_map.php">IT college Map</a>
@@ -84,7 +84,7 @@ try {
             <div class="card">
                 <!-- Back to Filter Button -->
                 <div class="room-banner">
-                <a href="javascript:history.back()">Go Back</a>
+                    <a href="javascript:history.back()">Go Back</a>
                 </div>
 
                 <div class="card-content">
@@ -96,16 +96,17 @@ try {
                     <!-- Room Description Section (on the left) -->
                     <div class="card-body">
                         <div class="desc-container">
-                        <h2 class="card-title"><?php echo htmlspecialchars($room['room_number']); ?> - Room Details</h2>
-                        <p class="card-text"><strong>Capacity:</strong> <?php echo htmlspecialchars($room['max_capacity']); ?> persons</p>
-                        <p class="card-text"><strong>Department:</strong> <?php echo htmlspecialchars($room['department_name']); ?></p>
-                        <p class="card-text"><strong>Room Type:</strong> <?php echo htmlspecialchars($room['room_type']); ?></p>
-                        <p class="card-text"><strong>Equipments Included:</strong></p>
-                        <p><?php echo EquipmentDescription($decodedEquipmentList); ?></p>
+                            <h2 class="card-title"><?php echo htmlspecialchars($room['room_num']); ?> - Room Details</h2>
+                            <p class="card-text"><strong>Capacity:</strong> <?php echo htmlspecialchars($room['capacity']); ?> persons</p>
+                            <p class="card-text"><strong>Department:</strong> <?php echo htmlspecialchars($room['department']); ?></p>
+                            <p class="card-text"><strong>Room Type:</strong> <?php echo htmlspecialchars($room['type']); ?></p>
+                            <p class="card-text"><strong>Equipments Included:</strong></p>
+                            <p><?php echo EquipmentDescription($equipmentList); ?></p>
                         </div>
                         <!-- Book Now Button -->
-                         <div class="btn-desc">
-                        <a href="booking.php" class="btn-primary" target="_blank">Book Now</a> </div>
+                        <div class="btn-desc">
+                            <a href="https://www.google.com.bh/" class="btn-primary" target="_blank">Book Now</a>
+                        </div>
                     </div>
                 </div>
             </div>
