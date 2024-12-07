@@ -66,6 +66,16 @@ function check_password_strength($password) {
     }
 }
 
+// Function to check email domain
+function check_email_domain($email) {
+    $domain = explode('@', $email);
+    if (isset($domain[1]) && $domain[1] == 'uob.edu.bh') {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 // Handle login form submission
 if (isset($_POST['login'])) {
     $email = $_POST['login-email'];
@@ -98,36 +108,41 @@ if (isset($_POST['signup'])) {
     $password = $_POST['signup-password'];
     $confirm_password = $_POST['signup-password-confirm'];
 
-    // Check password strength
-    $password_strength = check_password_strength($password);
-    if ($password_strength !== true) {
-        echo 'Password is not strong enough:';
-        foreach ($password_strength as $error) {
-            echo '<br>' . $error;
-        }
+    // Check email domain
+    if (!check_email_domain($email)) {
+        echo 'Please use a valid University of Bahrain email address (e.g., example@uob.edu.bh)';
     } else {
-        // Validate email and password
-        if ($password == $confirm_password) {
-            // Check if email already exists
-            $stmt = $pdo->prepare('SELECT * FROM user WHERE email = :email');
-            $stmt->execute(['email' => $email]);
-            if ($stmt->fetch()) {
-                echo 'Email already in use';
-            } else {
-                // Hash the password before storing it
-                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                
-                // Insert new user into database
-                $stmt = $pdo->prepare('INSERT INTO user (email, pass) VALUES (:email, :password)');
-                $stmt->execute(['email' => $email, 'password' => $hashed_password]);
-                
-                // Redirect to login page after successful registration
-                header('Location: login.php');
-                exit;
+        // Check password strength
+        $password_strength = check_password_strength($password);
+        if ($password_strength !== true) {
+            echo 'Password is not strong enough:';
+            foreach ($password_strength as $error) {
+                echo '<br>' . $error;
             }
         } else {
-            // Display error message if passwords do not match
-            echo 'Passwords do not match';
+            // Validate email and password
+            if ($password == $confirm_password) {
+                // Check if email already exists
+                $stmt = $pdo->prepare('SELECT * FROM user WHERE email = :email');
+                $stmt->execute(['email' => $email]);
+                if ($stmt->fetch()) {
+                    echo 'Email already in use';
+                } else {
+                    // Hash the password before storing it
+                    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                    
+                    // Insert new user into database
+                    $stmt = $pdo->prepare('INSERT INTO user (email, pass) VALUES (:email, :password)');
+                    $stmt->execute(['email' => $email, 'password' => $hashed_password]);
+                    
+                    // Redirect to login page after successful registration
+                    header('Location: login.php');
+                    exit;
+                }
+            } else {
+                // Display error message if passwords do not match
+                echo 'Passwords do not match';
+            }
         }
     }
 }
@@ -136,13 +151,12 @@ if (isset($_POST['signup'])) {
 $pdo = null;
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="project.css">
     <title>Registration and Login</title>
 </head>
 <body>
@@ -159,7 +173,7 @@ $pdo = null;
                     <fieldset>
                         <legend>Please, enter your email and password for login.</legend>
                         <div class="input-block">
-                            <label for="login-email">E-mail</label>
+                            <label for="login-email">E-mail (e.g., example@uob.edu.bh)</label>
                             <input id="login-email" type="email" name="login-email" required>
                         </div>
                         <div class="input-block">
@@ -181,8 +195,9 @@ $pdo = null;
                     <fieldset>
                         <legend>Please, enter your email, password and password confirmation for sign up.</legend>
                         <div class="input-block">
-                            <label for="signup-email">E-mail</label>
+                            <label for="signup-email">E-mail (e.g., example@uob.edu.bh)</label>
                             <input id="signup-email" type="email" name="signup-email" required>
+                            <p style="color: red;">Please use a valid University of Bahrain email address.</p>
                         </div>
                         <div class="input-block">
                             <label for="signup-password">Password</label>
