@@ -11,6 +11,9 @@ try {
 // Initialize booking array
 $booking = [];
 
+// Define variables
+$user_id = $room_id = $date = $timeslots = '';
+
 // Fetch bookings for a specific room and date
 if (isset($_GET['date']) && isset($_GET['room_id'])) {
     $date = $_GET['date'];
@@ -27,38 +30,26 @@ if (isset($_POST['bookings'])) {
     $timeslots = $_POST['timeslots'];
     $date = $_POST['date'];
 
-// Check if the timeslot is already booked
-$stmt = $pdo->prepare("SELECT COUNT(*) FROM bookings WHERE date = :date AND room_id = :room_id AND timeslots = :timeslots");
-$stmt->execute(['date' => $date, 'room_id' => $room_id, 'timeslots' => $timeslots]);
-$count = $stmt->fetchColumn();
+    // Check if the timeslot is already booked
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM bookings WHERE date = :date AND room_id = :room_id AND timeslots = :timeslots");
+    $stmt->execute(['date' => $date, 'room_id' => $room_id, 'timeslots' => $timeslots]);
+    $count = $stmt->fetchColumn();
 
-if ($count == 0) {
-    // Insert the booking if the timeslot is not already booked
-    $stmt = $pdo->prepare("INSERT INTO bookings (user_id, room_id, date, timeslots) VALUES (:user_id, :room_id, :date, :timeslots)");
-    try {
-        if ($stmt->execute(['user_id' => $user_id, 'room_id' => $room_id, 'date' => $date, 'timeslots' => $timeslots])) {
-            $message = "<div class='alert alert-success'>Booking Successful</div>";
-            $booking[] = $timeslots; // Add booked timeslot to the array
+    if ($count == 0) {
+        // Insert the booking if the timeslot is not already booked
+        $stmt = $pdo->prepare("INSERT INTO bookings (user_id, room_id, date, timeslots) VALUES (:user_id, :room_id, :date, :timeslots)");
+        try {
+            if ($stmt->execute(['user_id' => $user_id, 'room_id' => $room_id, 'date' => $date, 'timeslots' => $timeslots])) {
+                $message = "<div class='alert alert-success'>Booking Successful</div>";
+                $booking[] = $timeslots; // Add booked timeslot to the array
+            }
+        } catch (PDOException $e) {
+            $message = "<div class='alert alert-danger'>Booking failed: " . $e->getMessage() . "</div>";
         }
-    } catch (PDOException $e) {
-        $message = "<div class='alert alert-danger'>Booking failed: " . $e->getMessage() . "</div>";
+    } else {
+        $message = "<div class='alert alert-danger'>This timeslot is already booked.</div>";
     }
-} else {
-    $message = "<div class='alert alert-danger'>This timeslot is already booked.</div>";
 }
-}
-
-    // Corrected SQL insert statement
-    $stmt = $pdo->prepare("INSERT INTO bookings (user_id, room_id, date, timeslots) VALUES (:user_id, :room_id, :date, :timeslots)");
-    try {
-        if ($stmt->execute(['user_id' => $user_id, 'room_id' => $room_id, 'date' => $date, 'timeslots' => $timeslots])) {
-            $message = "<div class='alert alert-success'>Booking Successful</div>";
-            $booking[] = $timeslots; // Add booked timeslot to the array
-        }
-    } catch (PDOException $e) {
-        $message = "<div class='alert alert-danger'>Booking failed: " . $e->getMessage() . "</div>";
-    }
-
 
 // Function to generate available time slots
 function timeslots($duration, $cleanup, $start, $end) {
@@ -82,6 +73,7 @@ function timeslots($duration, $cleanup, $start, $end) {
 
     return $slots;
 }
+
 
 // Function to generate the calendar
 function build_calendar($month, $year) {
@@ -142,7 +134,12 @@ function build_calendar($month, $year) {
         if ($date < date('Y-m-d')) {
             $calendar .= "<td><h4>$currentDay</h4><button class='btn btn-danger btn-xs'>N/A</button></td>";
         } else {
-            $calendar .= "<td class='$todayClass'><h4>$currentDay</h4><a href='?month=$month&year=$year&day=$currentDay&room_id=1' class='btn btn-success btn-xs'>Book</a></td>"; // Adjust room_id as needed
+            $dayOfWeekName = date('l', strtotime($date));
+            if ($dayOfWeekName == 'Friday') {
+                $calendar .= "<td class='$todayClass'><h4>$currentDay</h4><button class='btn btn-danger btn-xs'>N/A</button></td>";
+            } else {
+                $calendar .= "<td class='$todayClass'><h4>$currentDay</h4><a href='?month=$month&year=$year&day=$currentDay&room_id=1' class='btn btn-success btn-xs'>Book</a></td>"; // Adjust room_id as needed
+            }
         }
 
         $currentDay++;
