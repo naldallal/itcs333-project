@@ -56,7 +56,17 @@ if (isset($_POST['update_profile'])) {
         echo "Error: " . $e->getMessage();
     }
 }
+if (isset($_POST['pending_role'])) {
+    $action = $_POST['action'];
+    $userId = $_SESSION["user_id"];
 
+    // Ensure the action is either 'admin' or 'user'
+        $statement = $conn->prepare("UPDATE user SET role = :act WHERE id = :id");
+        $statement->bindParam(':act', $action);
+        $statement->bindParam(':id', $userId);
+        $statement->execute();
+
+}
 // Upload Profile Picture
 if (isset($_POST['upload_picture'])) {
     if (isset($_FILES["profile_picture"]) && $_FILES["profile_picture"]["error"] == 0) {
@@ -130,20 +140,14 @@ if (isset($_POST['upload_picture'])) {
         </div>
         <!-- Navbar -->
         <ul>
+            
             <li>
-                <a href="#message">
-                    <span class="icon-count">29</span>
-                    <i class="fa fa-envelope fa-2x"></i>
+                <a href="javascript:history.back()">
+                    <i class="fa fa-arrow-left fa-2x"></i>
                 </a>
             </li>
             <li>
-                <a href="#notification">
-                    <span class="icon-count">59</span>
-                    <i class="fa fa-bell fa-2x"></i>
-                </a>
-            </li>
-            <li>
-                <a href="#sign-out">
+                <a href="logout.php">
                     <i class="fa fa-sign-out-alt fa-2x"></i>
                 </a>
             </li>
@@ -218,11 +222,12 @@ if (isset($_POST['upload_picture'])) {
                     <label for="imageUpload">Change Profile Image:</label>
                     <input type="file" id="imageUpload" accept="image/*" onchange="previewImage(event)">
                 </div>
-                <form method="POST" style="display:inline;">
-                    <input type="hidden" name="id" value="<?= $userId ?>">
-                    <input type="hidden" name="action" value="pending">
-                    <button type="submit" name="pending_role">Admin Request</button>
-                </form>
+                <form method='POST'  style='display:inline;'>
+    <input type='hidden' name='id' value='$_SESSION["user_id"]'>
+    <input type='hidden' name='action' value='pending'>
+    <button type='submit' name='pending_role'>Admin Request</button>
+</form>
+
             </div>
         </div>
     </div>

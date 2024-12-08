@@ -373,16 +373,16 @@ footer p {
 <header>
     <h1>Room Booking System</h1>
     <nav>
-        <a href="building_map.php">IT college Map</a>
-        <a href="filter_page.php" class="active">Filter</a>
-        <a href="userprofile2.php">User Profile</a>
+    <a href="building_map.php?id=<?= $_SESSION['user_id'] ?>">IT college Map</a>
+    <a href="filter_page.php?id=<?= $_SESSION['user_id'] ?>" class="active">Filter</a>
+        <a href="userprofile2.php?id=<?= $_SESSION['user_id'] ?>">User Profile</a>
         <a href="logout.php">Log out</a>
     </nav>
 </header>
 
 <hr>
 <div class="change-view-container">
-    <a href="building_map.php">Change View</a>
+    <a href="building_map.php?id=<?= $_SESSION['user_id'] ?>">Change View</a>
 </div>
 <hr>
 

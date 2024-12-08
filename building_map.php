@@ -60,16 +60,16 @@ try {
     <header>
         <h1>Room Booking System</h1>
         <nav>
-            <a href="building_map.php" class="active">IT College Map</a>
+            <a href="building_map.php?id=<?= $_SESSION['user_id'] ?>" class="active">IT College Map</a>
             <a href="filter_page.php?id=<?= $_SESSION['user_id'] ?>">Filter</a>
-            <a href="userprofile2.php">User Profile</a>
-            <a href="#contact">Contact</a>
+            <a href="userprofile2.php?id=<?= $_SESSION['user_id'] ?>">User Profile</a>
+            <a href="logout.php">Log out</a>
         </nav>
     </header>
 
     <hr>
     <div class="change-view-container">
-        <a href="filter_page.php">Change View</a>
+    <a href="filter_page.php?id=<?= $_SESSION['user_id'] ?>">Change View</a>
     </div>
     <hr>
 
