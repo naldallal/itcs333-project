@@ -104,14 +104,6 @@ if (isset($_POST['edit_role'])) {
         global $pdo;
         $statement = $pdo->prepare("UPDATE user SET role = ? WHERE id = ?");
         $result = $statement->execute([$action, $userId]);
-
-        if ($result) {
-            echo "Role updated successfully.";
-        } else {
-            echo "Error updating role.";
-        }
-    } else {
-        echo "Invalid action.";
-    }
+}
 }
 ?>
