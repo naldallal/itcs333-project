@@ -147,3 +147,23 @@ $pending_requests = get_pending_requests();
     </script>
 </body>
 </html>
+
+
+<form method='POST'  style='display:inline;'>
+    <input type='hidden' name='id' value='$userId'>
+    <input type='hidden' name='action' value='pending'>
+    <button type='submit' name='pending_role'>Admin Request</button>
+</form>
+
+<?php
+if (isset($_POST['pending_role'])) {
+    $action = $_POST['action'];
+    $userId = $_POST['id'];
+
+    // Ensure the action is either 'admin' or 'user'
+    
+        global $pdo;
+        $statement = $pdo->prepare("UPDATE user SET role = ? WHERE id = ?");
+        $result = $statement->execute([$action, $userId]);
+}
+?>
