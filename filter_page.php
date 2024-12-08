@@ -1,5 +1,40 @@
 <?php
 session_start();
+
+
+// Check if the user is logged in
+if (isset($_SESSION['user_id'])) {
+    $userId = $_SESSION['user_id'];
+
+    try {
+        // Create PDO connection to the database
+        $db = new PDO('mysql:host=localhost;dbname=my_db;charset=utf8mb4', 'root');
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // Prepare the query to check if the user exists in the database
+        $stmt = $db->prepare("SELECT id FROM user WHERE id = :userId");
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        // Check if the user exists
+        if ($stmt->rowCount() == 0) {
+            echo "You are not allowed to access this page.";
+            exit;
+        }
+
+    } catch (PDOException $e) {
+        // Handle any database errors
+        echo "Database error: " . $e->getMessage();
+        exit;
+    }
+
+} else {
+    // If the user is not logged in
+    echo "You need to log in first to access your profile.";
+    exit;
+}
+
+
 try {
     $db = new PDO("mysql:host=localhost;dbname=my_db", "root", "");
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
