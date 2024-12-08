@@ -1,4 +1,5 @@
 <?php
+session_start();
 try {
     $db = new PDO("mysql:host=localhost;dbname=my_db", "root", "");
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -7,6 +8,14 @@ try {
 
     $filters = [];
 
+    if (isset($_GET['id'])) {
+        $user_id = $_GET['id'];
+    } else {
+        // Handle the case where user_id is not provided (maybe redirect to login page)
+        header("Location: login_page.php");
+        exit();
+    }
+    
     // Max Capacity Filter
     if (isset($_GET['capacity']) && is_array($_GET['capacity'])) {
         $selectedCapacities = $_GET['capacity'];
@@ -366,7 +375,7 @@ footer p {
     <nav>
         <a href="building_map.php">IT college Map</a>
         <a href="filter_page.php" class="active">Filter</a>
-        <a href="#services">Services</a>
+        <a href="userprofile2.php">Services</a>
         <a href="#contact">Contact</a>
     </nav>
 </header>

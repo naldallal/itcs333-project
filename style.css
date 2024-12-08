@@ -1,85 +1,110 @@
-             /* booking css */
-             table { table-layout: fixed; }
-             td { width: 14%; }
-             .today { background: yellow; }
-             .empty { background: #f4f4f4; }
-     
-              /* Flexbox layout for the calendar navigation */
-              .calendar-nav {
-                 display: flex;
-                 justify-content: space-between; /* Spread buttons out */
-                 align-items: center;
-                 margin-bottom: 20px;
-                 position: relative;
-             }
-     
-             .calendar-nav a {
-                 padding: 5px 15px;
-                 text-align: center;
-                 text-decoration: none;
-                 color: white;
-                 border-radius: 5px;
-                 font-size: 14px;
-             }
-     
-             .calendar-nav a:not(.current-month) {
-                 background-color: #007bff;  /* Blue color for Previous and Next buttons */
-             }
-     
-             .calendar-nav .current-month {
-                 background-color: #28a745;
-                 font-weight: bold;
-                 text-transform: uppercase;
-             }
-     
-             /* Position the Previous and Next buttons */
-             .calendar-nav .prev-month {
-                 position: absolute;
-                 left: 10px;
-             }
-     
-             .calendar-nav .next-month {
-                 position: absolute;
-                 right: 10px;
-             }
-     
-             /* Center the Current Month button */
-             .calendar-nav .current-month {
-                 margin: 0 auto;
-             }
-     
-             /* Hover effect for buttons */
-             .calendar-nav a:hover {
-                 opacity: 0.8;
-             }
-     
-             @media (max-width: 768px) {
-                 .calendar-nav {
-                     flex-direction: column;
-                     align-items: stretch;
-                 }
-     
-                 .calendar-nav a {
-                     margin: 5px 0;
-                 }
-             }
-             #main_title{
-                text-align: center;
-                background-color:#543310;
-                color:#F8F4E1;
-                padding: 30px;
-                letter-spacing: 2px;
-                font-weight: 600;
-             }
+/* booking css */
+table { 
+    display:flexbox;
+    table-layout:unset;
+    background-color:#F8F4E1;
+    color:#543310;
+    padding: 10px;
+    letter-spacing: 2px;
+    font-weight: 500; }
 
-             #head_titles{
-                background-color:#F8F4E1;
-                color:#543310;
-                padding: 10px;
-                letter-spacing: 2px;
-                font-weight: 500; 
+ td { width: 14%; 
 
-             }
-             
+background-color: #FAF7F0;
+color:#543310;
     
+
+
+}
+ .today { background: #d3c5b6; }
+ .empty { background: #f4f4f4; }
+ 
+  /* Flexbox layout for the calendar navigation */
+  .calendar-nav {
+     display: flex;
+     justify-content: space-between; /* Spread buttons out */
+     align-items: center;
+     margin-bottom: 20px;
+     position: relative;
      
+     
+ }
+
+ .calendar-nav a {
+     padding: 5px 15px;
+     text-align: center;
+     text-decoration: none;
+     background-color:#543310;
+     color:#F8F4E1;
+     padding: 14px;
+     letter-spacing: 1px;
+     font-weight: 600;
+     border-radius: 5px;
+     font-size: 16px;
+ }
+
+ .calendar-nav a:not(.current-month) {
+     background-color: #74512D;  /* Blue color for Previous and Next buttons */
+ }
+
+ .calendar-nav .current-month {
+     background-color: #4B5945;
+     font-weight: bold;
+     text-transform: uppercase;
+ }
+
+ /* Position the Previous and Next buttons */
+ .calendar-nav .prev-month {
+     position: absolute;
+     left: 10px;
+     
+ }
+
+ .calendar-nav .next-month {
+     position: absolute;
+     right: 10px;
+ }
+
+ /* Center the Current Month button */
+ .calendar-nav .current-month {
+     margin: 0 auto;
+ }
+
+ /* Hover effect for buttons */
+ .calendar-nav a:hover {
+     opacity: 0.8;
+     color:#d3c5b6;
+ }
+
+ @media (max-width: 768px) {
+     .calendar-nav {
+         flex-direction: column;
+         align-items: stretch;
+         
+     }
+
+     .calendar-nav a {
+         margin: 5px 0;
+     }
+ }
+ #main_title , h1{
+    text-align: center;
+    background-color:#543310;
+    color:#F8F4E1;
+    padding: 30px;
+    letter-spacing: 2px;
+    font-weight: 600;
+ }
+
+ #head_titles ,h2 , h3{
+    background-color:#F8F4E1;
+    color:#543310;
+    padding: 10px;
+    letter-spacing: 2px;
+    font-weight: 500; 
+ }
+
+ .slot{
+    background-color: #74512D;
+    
+ }

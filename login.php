@@ -1,4 +1,14 @@
 <?php
+// Check if a session is already started
+if (session_status() == PHP_SESSION_ACTIVE) {
+    // If a session already exists, destroy it
+    session_unset();    // Unset all session variables
+    session_destroy();  // Destroy the session
+}
+
+// Start a new session
+session_start();
+
 // Configuration
 $db_host = '127.0.0.1';
 $db_username = 'root';
@@ -13,7 +23,20 @@ $options = [
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
 try {
-    $pdo = new PDO($dsn, $db_username, $db_password, $options);
+    $db = new PDO("mysql:host=localhost;dbname=my_db", "root", "");
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $query = "SELECT * FROM user"; // Add WHERE clause to filter by room_num
+    $stmt = $db->prepare($query);
+    $stmt->execute();
+    
+    // Fetch the room data
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user) {
+        echo "user not found.";
+        exit();
+    }
+
 } catch (PDOException $e) {
     throw new PDOException($e->getMessage(), (int)$e->getCode());
 }
@@ -24,9 +47,17 @@ function authenticate_user($email, $password) {
     $stmt = $pdo->prepare('SELECT * FROM user WHERE email = :email');
     $stmt->execute(['email' => $email]);
     $user = $stmt->fetch();
+
+    // $_GET['id']=$
     
     // If user exists, verify password
     if ($user && password_verify($password, $user['pass'])) {
+        $stmt = $pdo->prepare('SELECT id FROM user WHERE email = :email');
+    $stmt->execute(['email' => $email]);
+    $_GET['id'] = $stmt->fetch();
+
+        // $_GET['id']=$
+
         return $user; // User found and password verified
     }
     return false; // Invalid credentials
@@ -108,55 +139,43 @@ if (isset($_POST['signup'])) {
     $password = $_POST['signup-password'];
     $confirm_password = $_POST['signup-password-confirm'];
 
-    // Check email domain
-    if (!check_email_domain($email)) {
-        echo 'Please use a valid University of Bahrain email address (e.g., example@uob.edu.bh)';
-    } else {
-        // Check password strength
-        $password_strength = check_password_strength($password);
-        if ($password_strength !== true) {
-            echo 'Password is not strong enough:';
-            foreach ($password_strength as $error) {
-                echo '<br>' . $error;
-            }
+    // Validate email and password
+    if ($password == $confirm_password) {
+        // Check if email already exists
+        $stmt = $db->prepare('SELECT * FROM user WHERE email = :email');
+        $stmt->execute(['email' => $email]);
+        if ($stmt->fetch()) {
+            echo 'Email already in use';
         } else {
-            // Validate email and password
-            if ($password == $confirm_password) {
-                // Check if email already exists
-                $stmt = $pdo->prepare('SELECT * FROM user WHERE email = :email');
-                $stmt->execute(['email' => $email]);
-                if ($stmt->fetch()) {
-                    echo 'Email already in use';
-                } else {
-                    // Hash the password before storing it
-                    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                    
-                    // Insert new user into database
-                    $stmt = $pdo->prepare('INSERT INTO user (email, pass) VALUES (:email, :password)');
-                    $stmt->execute(['email' => $email, 'password' => $hashed_password]);
-                    
-                    // Redirect to login page after successful registration
-                    header('Location: login.php');
-                    exit;
-                }
-            } else {
-                // Display error message if passwords do not match
-                echo 'Passwords do not match';
-            }
+            // Hash the password before storing it
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            
+            // Insert new user into database
+            $stmt = $db->prepare('INSERT INTO user (email, pass) VALUES (:email, :password)');
+            $stmt->execute(['email' => $email, 'password' => $hashed_password]);
+            
+            // Redirect to login page after successful registration
+            header('Location: login.php');
+            exit;
         }
+    } else {
+        // Display error message if passwords do not match
+        echo 'Passwords do not match';
     }
 }
 
 // Close database connection
-$pdo = null;
+$db = null;
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="project.css">
+    <link rel="stylesheet" href="login.css">
     <title>Registration and Login</title>
 </head>
 <body>
@@ -182,6 +201,9 @@ $pdo = null;
                         </div>
                     </fieldset>
                     <button type="submit" name="login" class="btn-login">Login</button>
+                    <div class="btn-desc">
+                            <a href="filter_page.php?id=<?php echo $_SESSION['user_id']; ?>" class="btn-primary" target="_blank">Book Now</a>
+                        </div>
                 </form>
             </div>
 

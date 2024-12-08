@@ -41,6 +41,7 @@ if (isset($_POST['update_profile'])) {
     $fname = $_POST['Fname'];
     $lname = $_POST['Lname'];
     $email = $_POST['email'];
+    $userId = $_SESSION['user_id'];
 
     // Update user data
     try {
@@ -84,6 +85,23 @@ if (isset($_POST['upload_picture'])) {
         echo "File is not an image.";
     }
 }
+if (isset($_POST['pending_role'])) {
+    $action = $_POST['action'];
+    $userId = $_SESSION['user_id'];
+
+    // Ensure the action is either 'admin' or 'user'
+    
+        // global $pdo;
+    $statement = $conn->prepare("UPDATE user SET role = :rol WHERE id = :id");
+    $statement->bindParam(':id', $userId);
+    $statement->bindParam(':rol', $action);
+    $statement->execute();
+
+
+
+
+    
+}
 ?>
 
 <!DOCTYPE html>
@@ -91,20 +109,90 @@ if (isset($_POST['upload_picture'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profile</title>
+    <title>Profile Page</title>
 
+    <!-- Custom Css -->
+    <link rel="stylesheet" href="userprofile2.css">
+
+    <!-- FontAwesome 5 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+    <style>
+        .editable {
+            display: none;
+        }
+        .visible {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <div class="profile-container">
-        <h2>User Profile</h2>
-        <img src="<?= $userData['profil_pic'] ?: 'default.png' ?>" alt="Profile Picture">
-        <p><strong>First Name:</strong> <?= htmlspecialchars($userData['Fname']) ?></p>
-        <p><strong>Last Name:</strong> <?= htmlspecialchars($userData['Lname']) ?></p>
-        <p><strong>Email:</strong> <?= htmlspecialchars($userData['email']) ?></p>
-        <hr>
+    <!-- Navbar top -->
+    <div class="navbar-top">
+        <div class="title">
+            <h1>Profile</h1>
+        </div>
 
-        <!-- Update Profile Form -->
-        <form action="" method="post">
+        <!-- Navbar -->
+        <ul>
+            <li>
+                <a href="#message">
+                    <span class="icon-count">29</span>
+                    <i class="fa fa-envelope fa-2x"></i>
+                </a>
+            </li>
+            <li>
+                <a href="#notification">
+                    <span class="icon-count">59</span>
+                    <i class="fa fa-bell fa-2x"></i>
+                </a>
+            </li>
+            <li>
+                <a href="#sign-out">
+                    <i class="fa fa-sign-out-alt fa-2x"></i>
+                </a>
+            </li>
+        </ul>
+        <!-- End -->
+    </div>
+    <!-- End -->
+
+    <!-- Sidenav -->
+    <div class="sidenav">
+        <div class="profile">
+            <img id="profileImage" src="https://static-00.iconduck.com/assets.00/avatar-default-icon-2048x2048-h6w375ur.png" alt="Default Profile" width="100" height="100">
+
+            <div class="name" id="profileName">
+            <?= htmlspecialchars($userData['Fname']) . " " .  htmlspecialchars($userData['Lname']) ?></p>            </div>
+        </div>
+        <div class="sidenav-url">
+            <div class="url">
+                <a href="#profile"
+ class="active">Profile</a>
+                <hr align="center">
+            </div>
+            <div class="url">
+                <a href="booking_table.php">Booking</a>
+                <hr align="center">
+            </div>
+        </div>
+    </div>
+    <!-- End -->
+
+    <!-- Main -->
+    <div class="main">
+        <h2>IDENTITY</h2>
+        <div class="card">
+            <div class="card-body">
+                <i class="fa fa-pen fa-xs edit" id="editButton" onclick="toggleEdit()"></i>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>Name</td>
+                            <td>:</td>
+                            <td id="displayName"><?= htmlspecialchars($userData['Fname']) . " " .  htmlspecialchars($userData['Lname']) ?></td>
+                            <td class="editable">
+                                <!-- <input type="text" id="editName" value="ImDezCode"> -->
+                                <form action="" method="post">
             <div class="form-group">
                 <label for="Fname">First Name:</label>
                 <input type="text" id="Fname" name="Fname" value="<?= htmlspecialchars($userData['Fname']) ?>" required>
@@ -119,6 +207,95 @@ if (isset($_POST['upload_picture'])) {
             </div>
             <button type="submit" name="update_profile">Update Profile</button>
         </form>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td>:</td>
+                            <td><?= htmlspecialchars($userData['email']) ?></td>
+                        </tr>
+                        <tr>
+                            <td>College</td>
+                            <td>:</td>
+                            <td>Information Technology</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="editable">
+                    <label for="imageUpload">Change Profile Image:</label>
+                    <input type="file" id="imageUpload" accept="image/*" onchange="previewImage(event)">
+                </div>
+                <form method='POST'  style='display:inline;'>
+    <input type='hidden' name='id' value='$userId'>
+    <input type='hidden' name='action' value='pending'>
+    <button type='submit' name='pending_role'>Admin Request</button>
+</form>
+
+
+            </div>
+        </div>
+    </div>
+    <!-- End -->
+
+    <script>
+        function toggleEdit() {
+            const editButton = document.getElementById('editButton');
+            const displayName = document.getElementById('displayName');
+            const editName = document.getElementById('editName');
+            const editableFields = document.querySelectorAll('.editable');
+
+            editableFields.forEach(field => {
+                field.classList.toggle('visible');
+            });
+
+            if (editButton.classList.contains('fa-pen')) {
+                editButton.classList.remove('fa-pen');
+                editButton.classList.add('fa-save');
+            } else {
+                displayName.textContent = editName.value;
+                editButton.classList.remove('fa-save');
+                editButton.classList.add('fa-pen');
+            }
+        }
+
+        function previewImage(event) {
+            const profileImage = document.getElementById('profileImage');
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                profileImage.src = e.target.result;
+            };
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+    <div class="profile-container">
+        <h2>User Profile</h2>
+        <img src="<?= $userData['profil_pic'] ?: 'default.png' ?>" alt="Profile Picture">
+        <p><strong>First Name:</strong> <?= htmlspecialchars($userData['Fname']) ?></p>
+        <p><strong>Last Name:</strong> <?= htmlspecialchars($userData['Lname']) ?></p>
+        <p><strong>Email:</strong> <?= htmlspecialchars($userData['email']) ?></p>
+        <hr>
+
+        <!-- Update Profile Form -->
+        <!-- <form action="" method="post">
+            <div class="form-group">
+                <label for="Fname">First Name:</label>
+                <input type="text" id="Fname" name="Fname" value="<?= htmlspecialchars($userData['Fname']) ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="Lname">Last Name:</label>
+                <input type="text" id="Lname" name="Lname" value="<?= htmlspecialchars($userData['Lname']) ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="<?= htmlspecialchars($userData['email']) ?>" required>
+            </div>
+            <button type="submit" name="update_profile">Update Profile</button>
+        </form> -->
         <hr>
 
         <!-- Upload Profile Picture Form -->

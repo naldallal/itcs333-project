@@ -2,6 +2,10 @@
 if (isset($_GET["booking_id"])) {
     $booking_id = $_GET["booking_id"]; // Store booking_id from URL query
 }
+else {
+    echo "No booking ID provided.";
+    exit();
+}
 
 // Database connection
 $dsn = "mysql:host=localhost;dbname=my_db"; // Corrected the DSN syntax
