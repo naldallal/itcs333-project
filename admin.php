@@ -422,7 +422,11 @@
                             <input type="checkbox" id="equipment" name="equipment[]" value="Projector">Projector<br/>
                             <input type="checkbox" id="equipment" name="equipment[]" value="Whiteboard">Whiteboard<br/>
                             <input type="checkbox" id="equipment" name="equipment[]" value="Computers">Computers<br/>
-                        </checkbox>                                  
+                        </checkbox>
+                        <label for="available_from">Available From  </label>
+                        <input type="time" name="available_from" value="08:00" requierd>
+                        <label for="available_to">Available To  </label>
+                        <input type="time" name="available_to" value="18:00" requierd>                                    
                         <input type="hidden" name="department" value="CS">
                         <input type="submit" name="add_room" value="Add Room">
                     </form>
@@ -527,7 +531,11 @@
                             <input type="checkbox" id="equipment" name="equipment[]" value="Projector">Projector<br/>
                             <input type="checkbox" id="equipment" name="equipment[]" value="Whiteboard">Whiteboard<br/>
                             <input type="checkbox" id="equipment" name="equipment[]" value="Computers">Computers<br/>
-                        </checkbox>                                
+                        </checkbox>
+                        <label for="available_from">Available From  </label>
+                        <input type="time" name="available_from" value="08:00" requierd>
+                        <label for="available_to">Available To  </label>
+                        <input type="time" name="available_to" value="18:00" requierd>                                  
                         <input type="hidden" name="department" value="CE">
                         <input type="submit" name="add_room" value="Add Room">
                     </form>
