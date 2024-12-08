@@ -22,6 +22,7 @@ try {
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':booking_id', $booking_id, PDO::PARAM_INT); // Bind the parameter with type
     $stmt->execute();
+    echo $booking_id;
 
     // Optional: Redirect or display a message after deletion
     echo "Booking cancelled successfully.";

@@ -40,7 +40,7 @@ if (isset($_POST['add_room'])) {
         return; 
     }
     $result = $pdo->query("INSERT INTO rooms (room_num, department,capacity,equipment,type) VALUES ('$room_num', '$department', $capacity, '$equipment','$type')");
-    echo "Room added successfully!";
+    // echo "Room added successfully!";
     // get_table($department);
 }
 if (isset($_POST['edit_room'])) {
@@ -83,11 +83,27 @@ function get_total_rooms(){
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     return $result['COUNT(*)'];
 }
-function get_pending_requests(){
+function get_total_requests(){
     global $pdo;
     $stmt = $pdo->query("SELECT COUNT(*) FROM user WHERE role='pending'");
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     return $result['COUNT(*)'];
 }
+function get_pending_requests(){
+    global $pdo;
+    $stmt = $pdo->query("SELECT * FROM user WHERE role='pending'");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+if (isset($_POST['edit_role'])) {
+    $action = $_POST['action'];
+    $userId = $_POST['id'];
 
+    // Ensure the action is either 'admin' or 'user'
+    if (in_array($action, ['admin', 'user'])) {
+        // Database connection
+        global $pdo;
+        $statement = $pdo->prepare("UPDATE user SET role = ? WHERE id = ?");
+        $result = $statement->execute([$action, $userId]);
+}
+}
 ?>

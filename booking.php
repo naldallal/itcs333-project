@@ -12,7 +12,7 @@ try {
 $booking = [];
 
 // Define variables
-$user_id = $room_num = $date = $timeslots = '';
+$user_id = $room_id = $date = $timeslots = '';
 
 // Fetch bookings for a specific room and date
 if (isset($_GET['date']) && isset($_GET['room_num'])) {
@@ -73,6 +73,7 @@ function timeslots($duration, $cleanup, $start, $end) {
 
     return $slots;
 }
+
 
 
 // Function to generate the calendar
@@ -138,7 +139,7 @@ function build_calendar($month, $year) {
             if ($dayOfWeekName == 'Friday') {
                 $calendar .= "<td class='$todayClass'><h4>$currentDay</h4><button class='btn btn-danger btn-xs'>N/A</button></td>";
             } else {
-                $calendar .= "<td class='$todayClass'><h4>$currentDay</h4><a href='?month=$month&year=$year&day=$currentDay&room_num=1' class='btn btn-success btn-xs'>Book</a></td>"; // Adjust room_num as needed
+                $calendar .= "<td class='$todayClass'><h4>$currentDay</h4><a href='?month=$month&year=$year&day=$currentDay&room_id=1' class='btn btn-success btn-xs'>Book</a></td>"; // Adjust room_id as needed
             }
         }
 
@@ -179,16 +180,12 @@ function build_calendar($month, $year) {
     <h1 class="text-center">Booking System</h1><hr>
 
     <?php
-    
     $month = isset($_GET['month']) ? (int)$_GET['month'] : date('m');
     $year = isset($_GET['year']) ? (int)$_GET['year'] : date('Y');
     $room_num = isset($_GET['room_num']) ? (int)$_GET['room_num'] : 1;
     $user_id = 1; // Replace with actual user ID from your session or authentication
-    
 
     echo build_calendar($month, $year);
-    
-    
 
     if (isset($_GET['day'])) {
         $selectedDay = (int)$_GET['day'];
@@ -200,11 +197,12 @@ function build_calendar($month, $year) {
         $cleanup = 10; // Cleanup time in minutes
         $start = "08:00"; // Start time
         $end = "19:00"; // End time
+        $end = "19:00"; // End time
         $slots = timeslots($duration, $cleanup, $start, $end);
 
         echo '<div class="row">';
         foreach ($slots as $slot) {
-            echo "<form method='POST' class='col-md-3 mb-3' id='timeslot'>"; // Adjust column width as needed
+            echo "<form method='POST' class='col-md-3 mb-3' id='timeslot' id='timeslot'>"; // Adjust column width as needed
             echo "<input type='hidden' id='date' name='date' value='$date'>";
             echo "<input type='hidden' id='room_num' name='room_num' value='$room_num'>";
             echo "<input type='hidden' id='user_id' name='user_id' value='$user_id'>";
