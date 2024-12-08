@@ -1,6 +1,21 @@
 <?php
 session_start();
+if (isset($_SESSION['user_id'])) {
+    $userId = $_SESSION['user_id'];
+    echo $userId;
+    global $pdo; 
+    $pdo = new PDO('mysql:host=localhost;dbname=my_db;charset=utf8mb4', 'root');
+    $stmt = $pdo->query("SELECT * FROM user WHERE id = '$userId'");
+    $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if ($stmt->rowCount() == 0) {
+        echo "You are not allowed to access this page.";
+        exit;
+    }
 
+} else {
+    echo "You need to log in first to access your profile.";
+    exit;
+}
 $servername = "localhost";
 $username = "root";
 $password = "";
