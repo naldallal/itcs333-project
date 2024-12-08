@@ -27,6 +27,27 @@ if (isset($_POST['bookings'])) {
     $timeslots = $_POST['timeslots'];
     $date = $_POST['date'];
 
+// Check if the timeslot is already booked
+$stmt = $pdo->prepare("SELECT COUNT(*) FROM bookings WHERE date = :date AND room_id = :room_id AND timeslots = :timeslots");
+$stmt->execute(['date' => $date, 'room_id' => $room_id, 'timeslots' => $timeslots]);
+$count = $stmt->fetchColumn();
+
+if ($count == 0) {
+    // Insert the booking if the timeslot is not already booked
+    $stmt = $pdo->prepare("INSERT INTO bookings (user_id, room_id, date, timeslots) VALUES (:user_id, :room_id, :date, :timeslots)");
+    try {
+        if ($stmt->execute(['user_id' => $user_id, 'room_id' => $room_id, 'date' => $date, 'timeslots' => $timeslots])) {
+            $message = "<div class='alert alert-success'>Booking Successful</div>";
+            $booking[] = $timeslots; // Add booked timeslot to the array
+        }
+    } catch (PDOException $e) {
+        $message = "<div class='alert alert-danger'>Booking failed: " . $e->getMessage() . "</div>";
+    }
+} else {
+    $message = "<div class='alert alert-danger'>This timeslot is already booked.</div>";
+}
+}
+
     // Corrected SQL insert statement
     $stmt = $pdo->prepare("INSERT INTO bookings (user_id, room_id, date, timeslots) VALUES (:user_id, :room_id, :date, :timeslots)");
     try {
@@ -37,7 +58,7 @@ if (isset($_POST['bookings'])) {
     } catch (PDOException $e) {
         $message = "<div class='alert alert-danger'>Booking failed: " . $e->getMessage() . "</div>";
     }
-}
+
 
 // Function to generate available time slots
 function timeslots($duration, $cleanup, $start, $end) {
@@ -161,12 +182,16 @@ function build_calendar($month, $year) {
     <h1 class="text-center">Booking System</h1><hr>
 
     <?php
+    
     $month = isset($_GET['month']) ? (int)$_GET['month'] : date('m');
     $year = isset($_GET['year']) ? (int)$_GET['year'] : date('Y');
     $room_id = isset($_GET['room_id']) ? (int)$_GET['room_id'] : 1;
     $user_id = 1; // Replace with actual user ID from your session or authentication
+    
 
     echo build_calendar($month, $year);
+    
+    
 
     if (isset($_GET['day'])) {
         $selectedDay = (int)$_GET['day'];
@@ -177,12 +202,12 @@ function build_calendar($month, $year) {
         $duration = 60; // Duration of each slot in minutes
         $cleanup = 10; // Cleanup time in minutes
         $start = "08:00"; // Start time
-        $end = "18:00"; // End time
+        $end = "19:00"; // End time
         $slots = timeslots($duration, $cleanup, $start, $end);
 
         echo '<div class="row">';
         foreach ($slots as $slot) {
-            echo "<form method='POST' class='col-md-3 mb-3'>"; // Adjust column width as needed
+            echo "<form method='POST' class='col-md-3 mb-3' id='timeslot'>"; // Adjust column width as needed
             echo "<input type='hidden' id='date' name='date' value='$date'>";
             echo "<input type='hidden' id='room_id' name='room_id' value='$room_id'>";
             echo "<input type='hidden' id='user_id' name='user_id' value='$user_id'>";
