@@ -186,34 +186,29 @@
                     <th>Action</th>
                 </tr>
                 <?php
-$pending_requests = get_pending_requests();
-foreach ($pending_requests as $request): 
-    echo "<tr>
-        <td>". $request['id']."</td>".
-        "<td>" . $request['email']. "</td>
-        <td>
-            <form method='POST'  style='display:inline;'>
-                <input type='hidden' name='id' value='". $request['id'] ."'>
-                <input type='hidden' name='action' value='admin'>
-                <button type='submit' name='edit_role'>Approve</button>
-            </form>
-            <form method='POST' style='display:inline;'>
-                <input type='hidden' name='id' value='". $request['id'] ."'>
-                <input type='hidden' name='action' value='user'>
-                <button type='submit' name='edit_role'>Disapprove</button>
-            </form>
-        </td>
-    </tr>";
-endforeach;
-?>
-
-                
+                    $pending_requests = get_pending_requests();
+                    foreach ($pending_requests as $request): 
+                        echo "<tr>
+                            <td>". $request['id']."</td>".
+                            "<td>" . $request['email']. "</td>
+                            <td>
+                                <form method='POST'  style='display:inline;'>
+                                    <input type='hidden' name='id' value='". $request['id'] ."'>
+                                    <input type='hidden' name='action' value='admin'>
+                                    <button type='submit' name='edit_role'>Approve</button>
+                                </form>
+                                <form method='POST' style='display:inline;'>
+                                    <input type='hidden' name='id' value='". $request['id'] ."'>
+                                    <input type='hidden' name='action' value='user'>
+                                    <button type='submit' name='edit_role'>Disapprove</button>
+                                </form>
+                            </td>
+                        </tr>";
+                    endforeach;
+                ?>
             </table>
         </div>
     </div>
-
-
-
         </section>
         <section id="rooms">
             <h2>Room Management</h2>
