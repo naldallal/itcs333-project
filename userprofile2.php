@@ -32,11 +32,11 @@ if (isset($_SESSION['user_id'])) {
     $userId = $_SESSION['user_id'];
     $userData = getUserData($conn, $userId);
 } else {
-    echo "You need to log in first,  to access your profile.";
+    echo "You need to log in first to access your profile.";
     exit;
 }
 
-// Updating the  Profile
+// Updating the Profile (Name, Email)
 if (isset($_POST['update_profile'])) {
     $fname = $_POST['Fname'];
     $lname = $_POST['Lname'];
@@ -57,50 +57,47 @@ if (isset($_POST['update_profile'])) {
     }
 }
 
-// Upload PPicture
+// Upload Profile Picture
 if (isset($_POST['upload_picture'])) {
-    $target_dir = "uploads/";
-    $target_file = $target_dir . basename($_FILES["profile_picture"]["name"]);
-    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+    if (isset($_FILES["profile_picture"]) && $_FILES["profile_picture"]["error"] == 0) {
+        $target_dir = "uploads/";
+        $target_file = $target_dir . basename($_FILES["profile_picture"]["name"]);
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
-    // Check if it's an picture..
-
-    $check = getimagesize($_FILES["profile_picture"]["tmp_name"]);
-    if ($check !== false) {
-        // Move uploaded file
-        if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $target_file)) {
-            try {
-                $stmt = $conn->prepare("UPDATE user SET profil_pic = :profile_picture WHERE id = :id");
-                $stmt->bindParam(':profile_picture', $target_file);
-                $stmt->bindParam(':id', $userId);
-                $stmt->execute();
-                echo "Profile image uploaded successfully.";
-            } catch (PDOException $e) {
-                echo "Error: " . $e->getMessage();
+        // Check if it's an image
+        $check = getimagesize($_FILES["profile_picture"]["tmp_name"]);
+        if ($check !== false) {
+            // Check file size (optional - max size: 5MB)
+            if ($_FILES["profile_picture"]["size"] <= 5000000) {
+                // Allow certain file formats (optional)
+                if ($imageFileType == "jpg" || $imageFileType == "png" || $imageFileType == "jpeg" || $imageFileType == "gif") {
+                    // Move uploaded file to the target directory
+                    if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $target_file)) {
+                        // Update database with the new profile picture path
+                        try {
+                            $stmt = $conn->prepare("UPDATE user SET profil_pic = :profile_picture WHERE id = :id");
+                            $stmt->bindParam(':profile_picture', $target_file);
+                            $stmt->bindParam(':id', $userId);
+                            $stmt->execute();
+                            echo "Profile picture uploaded successfully.";
+                        } catch (PDOException $e) {
+                            echo "Error updating database: " . $e->getMessage();
+                        }
+                    } else {
+                        echo "Sorry, there was an error uploading your file.";
+                    }
+                } else {
+                    echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+                }
+            } else {
+                echo "Sorry, your file is too large.";
             }
         } else {
-            echo "Error uploading the picture ..";
+            echo "File is not an image.";
         }
     } else {
-        echo "File is not an image.";
+        echo "No file uploaded or there was an error with the upload.";
     }
-}
-if (isset($_POST['pending_role'])) {
-    $action = $_POST['action'];
-    $userId = $_SESSION['user_id'];
-
-    // Ensure the action is either 'admin' or 'user'
-    
-        // global $pdo;
-    $statement = $conn->prepare("UPDATE user SET role = :rol WHERE id = :id");
-    $statement->bindParam(':id', $userId);
-    $statement->bindParam(':rol', $action);
-    $statement->execute();
-
-
-
-
-    
 }
 ?>
 
@@ -131,7 +128,6 @@ if (isset($_POST['pending_role'])) {
         <div class="title">
             <h1>Profile</h1>
         </div>
-
         <!-- Navbar -->
         <ul>
             <li>
@@ -152,22 +148,20 @@ if (isset($_POST['pending_role'])) {
                 </a>
             </li>
         </ul>
-        <!-- End -->
     </div>
     <!-- End -->
 
     <!-- Sidenav -->
     <div class="sidenav">
         <div class="profile">
-            <img id="profileImage" src="https://static-00.iconduck.com/assets.00/avatar-default-icon-2048x2048-h6w375ur.png" alt="Default Profile" width="100" height="100">
-
+            <img id="profileImage" src="<?= htmlspecialchars($userData['profil_pic']) ?: 'https://static-00.iconduck.com/assets.00/avatar-default-icon-2048x2048-h6w375ur.png' ?>" alt="Profile Picture" width="100" height="100">
             <div class="name" id="profileName">
-            <?= htmlspecialchars($userData['Fname']) . " " .  htmlspecialchars($userData['Lname']) ?></p>            </div>
+                <?= htmlspecialchars($userData['Fname']) . " " .  htmlspecialchars($userData['Lname']) ?>
+            </div>
         </div>
         <div class="sidenav-url">
             <div class="url">
-                <a href="#profile"
- class="active">Profile</a>
+                <a href="#profile" class="active">Profile</a>
                 <hr align="center">
             </div>
             <div class="url">
@@ -191,22 +185,21 @@ if (isset($_POST['pending_role'])) {
                             <td>:</td>
                             <td id="displayName"><?= htmlspecialchars($userData['Fname']) . " " .  htmlspecialchars($userData['Lname']) ?></td>
                             <td class="editable">
-                                <!-- <input type="text" id="editName" value="ImDezCode"> -->
                                 <form action="" method="post">
-            <div class="form-group">
-                <label for="Fname">First Name:</label>
-                <input type="text" id="Fname" name="Fname" value="<?= htmlspecialchars($userData['Fname']) ?>" required>
-            </div>
-            <div class="form-group">
-                <label for="Lname">Last Name:</label>
-                <input type="text" id="Lname" name="Lname" value="<?= htmlspecialchars($userData['Lname']) ?>" required>
-            </div>
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="<?= htmlspecialchars($userData['email']) ?>" required>
-            </div>
-            <button type="submit" name="update_profile">Update Profile</button>
-        </form>
+                                    <div class="form-group">
+                                        <label for="Fname">First Name:</label>
+                                        <input type="text" id="Fname" name="Fname" value="<?= htmlspecialchars($userData['Fname']) ?>" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="Lname">Last Name:</label>
+                                        <input type="text" id="Lname" name="Lname" value="<?= htmlspecialchars($userData['Lname']) ?>" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email">Email:</label>
+                                        <input type="email" id="email" name="email" value="<?= htmlspecialchars($userData['email']) ?>" required>
+                                    </div>
+                                    <button type="submit" name="update_profile">Update Profile</button>
+                                </form>
                             </td>
                         </tr>
                         <tr>
@@ -225,13 +218,11 @@ if (isset($_POST['pending_role'])) {
                     <label for="imageUpload">Change Profile Image:</label>
                     <input type="file" id="imageUpload" accept="image/*" onchange="previewImage(event)">
                 </div>
-                <form method='POST'  style='display:inline;'>
-    <input type='hidden' name='id' value='$userId'>
-    <input type='hidden' name='action' value='pending'>
-    <button type='submit' name='pending_role'>Admin Request</button>
-</form>
-
-
+                <form method="POST" style="display:inline;">
+                    <input type="hidden" name="id" value="<?= $userId ?>">
+                    <input type="hidden" name="action" value="pending">
+                    <button type="submit" name="pending_role">Admin Request</button>
+                </form>
             </div>
         </div>
     </div>
@@ -260,52 +251,8 @@ if (isset($_POST['pending_role'])) {
 
         function previewImage(event) {
             const profileImage = document.getElementById('profileImage');
-            const file = event.target.files[0];
-            const reader = new FileReader();
-
-            reader.onload = function(e) {
-                profileImage.src = e.target.result;
-            };
-
-            if (file) {
-                reader.readAsDataURL(file);
-            }
+            profileImage.src = URL.createObjectURL(event.target.files[0]);
         }
     </script>
-    <div class="profile-container">
-        <h2>User Profile</h2>
-        <img src="<?= $userData['profil_pic'] ?: 'default.png' ?>" alt="Profile Picture">
-        <p><strong>First Name:</strong> <?= htmlspecialchars($userData['Fname']) ?></p>
-        <p><strong>Last Name:</strong> <?= htmlspecialchars($userData['Lname']) ?></p>
-        <p><strong>Email:</strong> <?= htmlspecialchars($userData['email']) ?></p>
-        <hr>
-
-        <!-- Update Profile Form -->
-        <!-- <form action="" method="post">
-            <div class="form-group">
-                <label for="Fname">First Name:</label>
-                <input type="text" id="Fname" name="Fname" value="<?= htmlspecialchars($userData['Fname']) ?>" required>
-            </div>
-            <div class="form-group">
-                <label for="Lname">Last Name:</label>
-                <input type="text" id="Lname" name="Lname" value="<?= htmlspecialchars($userData['Lname']) ?>" required>
-            </div>
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="<?= htmlspecialchars($userData['email']) ?>" required>
-            </div>
-            <button type="submit" name="update_profile">Update Profile</button>
-        </form> -->
-        <hr>
-
-        <!-- Upload Profile Picture Form -->
-        <form action="" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="profile_picture">Upload Profile Picture:</label>
-                <input type="file" id="profile_picture" name="profile_picture" required>
-            </div>
-            <button type="submit" name="upload_picture">Upload Picture</button>
-        </form>
-    </div>
 </body>
 </html>

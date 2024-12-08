@@ -1,4 +1,5 @@
 <?php 
+session_start();
 try {
     // Database connection
     $db = new PDO("mysql:host=localhost;dbname=my_db", "root", "");
@@ -44,6 +45,7 @@ try {
     echo "Connection failed: " . $e->getMessage();
     exit();
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -59,8 +61,8 @@ try {
         <h1>Room Booking System</h1>
         <nav>
             <a href="building_map.php" class="active">IT College Map</a>
-            <a href="filter_page.php">Filter</a>
-            <a href="#services">Services</a>
+            <a href="filter_page.php?id=<?= $_SESSION['user_id'] ?>">Filter</a>
+            <a href="userprofile2.php">User Profile</a>
             <a href="#contact">Contact</a>
         </nav>
     </header>

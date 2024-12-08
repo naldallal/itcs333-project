@@ -375,8 +375,8 @@ footer p {
     <nav>
         <a href="building_map.php">IT college Map</a>
         <a href="filter_page.php" class="active">Filter</a>
-        <a href="userprofile2.php">Services</a>
-        <a href="#contact">Contact</a>
+        <a href="userprofile2.php">User Profile</a>
+        <a href="logout.php">Log out</a>
     </nav>
 </header>
 

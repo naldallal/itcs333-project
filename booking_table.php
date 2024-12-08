@@ -1,26 +1,28 @@
 <?php
-// Database connection
-$dsn = "mysql:host=localhost;dbname=my_db";
-$username = "root";
-$password = "";
-$pdo = new PDO($dsn, $username, $password);
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Set error mode
+session_start();
+// Database connection using PDO
+try {
+    global $pdo;
+    $pdo = new PDO('mysql:host=localhost;dbname=my_db', "root");
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Could not connect to the database: " . $e->getMessage());
+}
 
 // Check if the 'cancel_book' button is pressed and delete the booking
 if (isset($_POST['cancel_book'])) {
     if (isset($_POST['booking_id'])) {
         $booking_id = $_POST['booking_id'];
-
-        // Debugging: Check if booking_id is set
-        echo "Booking ID: " . $booking_id . "<br>";
+        $user_id = $_SESSION['user_id'];
 
         try {
-            // Prepare the DELETE SQL statement
-            $sql = "DELETE FROM bookings WHERE booking_id = :booking_id";
+            // Prepare the DELETE SQL statement with user_id check
+            $sql = "DELETE FROM bookings WHERE booking_id = :booking_id AND user_id = :user_id";
             $stmt = $pdo->prepare($sql);
 
-            // Bind the booking_id parameter
+            // Bind the parameters
             $stmt->bindParam(':booking_id', $booking_id, PDO::PARAM_INT);
+            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
 
             // Execute the query
             $stmt->execute();
@@ -71,10 +73,13 @@ if (isset($_POST['cancel_book'])) {
                 $connection = new PDO("mysql:host=$servername;dbname=$db", $username, $password);
                 $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-                // SQL query to fetch data
-                $sql = "SELECT * FROM bookings"; 
+                // Get the logged-in user's ID
+                $user_id = $_SESSION['user_id'];
+
+                // SQL query to fetch data for the logged-in user
+                $sql = "SELECT * FROM bookings WHERE user_id = :user_id";
                 $stmt = $connection->prepare($sql);
-                $stmt->execute();
+                $stmt->execute(['user_id' => $user_id]);
 
                 // Loop through each row and display the data
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {

@@ -1,11 +1,4 @@
 <?php
-// Check if a session is already started
-if (session_status() == PHP_SESSION_ACTIVE) {
-    // If a session already exists, destroy it
-    session_unset();    // Unset all session variables
-    session_destroy();  // Destroy the session
-}
-
 // Start a new session
 session_start();
 
@@ -22,89 +15,33 @@ $options = [
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
+
 try {
-    $db = new PDO("mysql:host=localhost;dbname=my_db", "root", "");
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $query = "SELECT * FROM user"; // Add WHERE clause to filter by room_num
-    $stmt = $db->prepare($query);
-    $stmt->execute();
-    
-    // Fetch the room data
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$user) {
-        echo "user not found.";
-        exit();
-    }
-
+    $db = new PDO($dsn, $db_username, $db_password, $options); // Only one PDO connection
 } catch (PDOException $e) {
-    throw new PDOException($e->getMessage(), (int)$e->getCode());
+    die("Could not connect to the database: " . $e->getMessage());
 }
 
 // Function to authenticate user
 function authenticate_user($email, $password) {
-    global $pdo;
-    $stmt = $pdo->prepare('SELECT * FROM user WHERE email = :email');
+    global $db;
+    $stmt = $db->prepare('SELECT * FROM user WHERE email = :email');
     $stmt->execute(['email' => $email]);
     $user = $stmt->fetch();
 
-    // $_GET['id']=$
-    
-    // If user exists, verify password
     if ($user && password_verify($password, $user['pass'])) {
-        $stmt = $pdo->prepare('SELECT id FROM user WHERE email = :email');
-    $stmt->execute(['email' => $email]);
-    $_GET['id'] = $stmt->fetch();
-
-        // $_GET['id']=$
-
-        return $user; // User found and password verified
+        return $user; // Return the user data
     }
     return false; // Invalid credentials
 }
 
 // Function to check if user is admin
 function is_admin($email) {
-    global $pdo;
-    $stmt = $pdo->prepare('SELECT role FROM user WHERE email = :email');
+    global $db;
+    $stmt = $db->prepare('SELECT role FROM user WHERE email = :email');
     $stmt->execute(['email' => $email]);
     $row = $stmt->fetch();
     return $row['role'] == 'admin';
-}
-
-// Function to check password strength
-function check_password_strength($password) {
-    $errors = array();
-    if (strlen($password) < 8) {
-        $errors[] = 'Password should be at least 8 characters';
-    }
-    if (!preg_match("#[0-9]+#", $password)) {
-        $errors[] = 'Password should have at least 1 number';
-    }
-    if (!preg_match("#[a-z]+#", $password)) {
-        $errors[] = 'Password should have at least 1 lowercase letter';
-    }
-    if (!preg_match("#[A-Z]+#", $password)) {
-        $errors[] = 'Password should have at least 1 uppercase letter';
-    }
-    if (!preg_match("#\W+#", $password)) {
-        $errors[] = 'Password should have at least 1 special character';
-    }
-    if (empty($errors)) {
-        return true;
-    } else {
-        return $errors;
-    }
-}
-
-// Function to check email domain
-function check_email_domain($email) {
-    $domain = explode('@', $email);
-    if (isset($domain[1]) && $domain[1] == 'uob.edu.bh') {
-        return true;
-    } else {
-        return false;
-    }
 }
 
 // Handle login form submission
@@ -112,21 +49,15 @@ if (isset($_POST['login'])) {
     $email = $_POST['login-email'];
     $password = $_POST['login-password'];
     $user = authenticate_user($email, $password);
+    
     if ($user) {
         // Start session and store user info
-        session_start();
         $_SESSION['user_id'] = $user['id'];  // Store user ID in session
         $_SESSION['email'] = $user['email']; // Store email in session
         
-        if (is_admin($email)) {
-            // Redirect to admin dashboard
-            header('Location: admin_dashboard.php');
-            exit;
-        } else {
-            // Redirect to user dashboard
-            header('Location: filter_page.php');
-            exit;
-        }
+        // Redirect to booking page with user ID
+        header('Location: filter_page.php?id=' . $_SESSION['user_id']);
+        exit;
     } else {
         // Display error message
         echo 'Invalid email or password';
@@ -168,8 +99,6 @@ if (isset($_POST['signup'])) {
 $db = null;
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -202,8 +131,8 @@ $db = null;
                     </fieldset>
                     <button type="submit" name="login" class="btn-login">Login</button>
                     <div class="btn-desc">
-                            <a href="filter_page.php?id=<?php echo $_SESSION['user_id']; ?>" class="btn-primary" target="_blank">Book Now</a>
-                        </div>
+                        
+                    </div>
                 </form>
             </div>
 

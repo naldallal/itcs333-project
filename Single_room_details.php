@@ -105,6 +105,9 @@ try {
                         </div>
                         <!-- Book Now Button -->
                         <div class="btn-desc">
+                            <?php
+                            $_GET["room_num"]=$room['room_num'];
+                            ?>
                             <a href="booking.php?room_num=<?php echo $room['room_num']; ?>" class="btn-primary" target="_blank">Book Now</a>
                         </div>
                     </div>

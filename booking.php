@@ -1,4 +1,5 @@
 <?php
+session_start();
 // Database connection using PDO
 try {
     global $pdo;
@@ -12,7 +13,9 @@ try {
 $booking = [];
 
 // Define variables
-$user_id = $room_id = $date = $timeslots = '';
+$user_id = $_SESSION['user_id'];
+$room_num = isset($_GET['room_num']) ? $_GET['room_num'] : null; // Ensure room_num is set
+$date = $timeslots = '';
 
 // Fetch bookings for a specific room and date
 if (isset($_GET['date']) && isset($_GET['room_num'])) {
@@ -74,10 +77,8 @@ function timeslots($duration, $cleanup, $start, $end) {
     return $slots;
 }
 
-
-
 // Function to generate the calendar
-function build_calendar($month, $year) {
+function build_calendar($month, $year, $room_num) {
     $daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     $firstDayOfMonth = mktime(0, 0, 0, $month, 1, $year);
     $numberDays = date('t', $firstDayOfMonth);
@@ -99,9 +100,9 @@ function build_calendar($month, $year) {
 
     // Navigation buttons
     $calendar .= "<div class='calendar-nav'>";
-    $calendar .= "<a class='btn btn-xs btn-primary' href='?month=$previousMonth&year=$previousYear'>Previous Month</a>";
-    $calendar .= "<a class='btn btn-xs btn-primary' href='?month=" . date('m') . "&year=" . date('Y') . "'>Current Month</a>";
-    $calendar .= "<a class='btn btn-xs btn-primary' href='?month=$nextMonth&year=$nextYear'>Next Month</a>";
+    $calendar .= "<a class='btn btn-xs btn-primary' href='?month=$previousMonth&year=$previousYear&room_num=$room_num'>Previous Month</a>";
+    $calendar .= "<a class='btn btn-xs btn-primary' href='?month=" . date('m') . "&year=" . date('Y') . "&room_num=$room_num'>Current Month</a>";
+    $calendar .= "<a class='btn btn-xs btn-primary' href='?month=$nextMonth&year=$nextYear&room_num=$room_num'>Next Month</a>";
     $calendar .= "</div>";
 
     // Calendar header
@@ -139,7 +140,7 @@ function build_calendar($month, $year) {
             if ($dayOfWeekName == 'Friday') {
                 $calendar .= "<td class='$todayClass'><h4>$currentDay</h4><button class='btn btn-danger btn-xs'>N/A</button></td>";
             } else {
-                $calendar .= "<td class='$todayClass'><h4>$currentDay</h4><a href='?month=$month&year=$year&day=$currentDay&room_id=1' class='btn btn-success btn-xs'>Book</a></td>"; // Adjust room_id as needed
+                $calendar .= "<td class='$todayClass'><h4>$currentDay</h4><a href='?month=$month&year=$year&day=$currentDay&room_num=$room_num' class='btn btn-success btn-xs'>Book</a></td>";
             }
         }
 
@@ -160,7 +161,6 @@ function build_calendar($month, $year) {
     return $calendar;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -182,10 +182,10 @@ function build_calendar($month, $year) {
     <?php
     $month = isset($_GET['month']) ? (int)$_GET['month'] : date('m');
     $year = isset($_GET['year']) ? (int)$_GET['year'] : date('Y');
-    $room_num = isset($_GET['room_num']) ? (int)$_GET['room_num'] : 1;
-    $user_id = 1; // Replace with actual user ID from your session or authentication
+    $room_num = isset($_GET['room_num']) ? (int)$_GET['room_num'] : 1; // Ensure room_num is set
+    $user_id = $_SESSION['user_id']; // Replace with actual user ID from your session or authentication
 
-    echo build_calendar($month, $year);
+    echo build_calendar($month, $year, $room_num);
 
     if (isset($_GET['day'])) {
         $selectedDay = (int)$_GET['day'];
@@ -197,12 +197,11 @@ function build_calendar($month, $year) {
         $cleanup = 10; // Cleanup time in minutes
         $start = "08:00"; // Start time
         $end = "19:00"; // End time
-        $end = "19:00"; // End time
         $slots = timeslots($duration, $cleanup, $start, $end);
 
         echo '<div class="row">';
         foreach ($slots as $slot) {
-            echo "<form method='POST' class='col-md-3 mb-3' id='timeslot' id='timeslot'>"; // Adjust column width as needed
+            echo "<form method='POST' class='col-md-3 mb-3' id='timeslot'>"; // Adjust column width as needed
             echo "<input type='hidden' id='date' name='date' value='$date'>";
             echo "<input type='hidden' id='room_num' name='room_num' value='$room_num'>";
             echo "<input type='hidden' id='user_id' name='user_id' value='$user_id'>";
