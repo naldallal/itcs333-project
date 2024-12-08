@@ -35,15 +35,6 @@ function authenticate_user($email, $password) {
     return false; // Invalid credentials
 }
 
-// Function to check if user is admin
-function is_admin($email) {
-    global $db;
-    $stmt = $db->prepare('SELECT role FROM user WHERE email = :email');
-    $stmt->execute(['email' => $email]);
-    $row = $stmt->fetch();
-    return $row['role'] == 'admin';
-}
-
 // Handle login form submission
 if (isset($_POST['login'])) {
     $email = $_POST['login-email'];
@@ -54,51 +45,26 @@ if (isset($_POST['login'])) {
         // Start session and store user info
         $_SESSION['user_id'] = $user['id'];  // Store user ID in session
         $_SESSION['email'] = $user['email']; // Store email in session
+        $_SESSION['role'] = $user['role']; // Store user role in session
         
-        // Redirect to booking page with user ID
-        header('Location: filter_page.php?id=' . $_SESSION['user_id']);
+        // Redirect based on user role
+        if ($_SESSION['role'] == 'admin') {
+            // Redirect to admin page if user is an admin
+            header('Location: admin.php');
+        } else {
+            // Redirect to filter page if user is a regular user
+            header('Location: filter_page.php?id=' . $_SESSION['user_id']);
+        }
         exit;
     } else {
-        // Display error message
+        // Display error message if credentials are invalid
         echo 'Invalid email or password';
-    }
-}
-
-// Handle registration form submission
-if (isset($_POST['signup'])) {
-    $email = $_POST['signup-email'];
-    $password = $_POST['signup-password'];
-    $confirm_password = $_POST['signup-password-confirm'];
-
-    // Validate email and password
-    if ($password == $confirm_password) {
-        // Check if email already exists
-        $stmt = $db->prepare('SELECT * FROM user WHERE email = :email');
-        $stmt->execute(['email' => $email]);
-        if ($stmt->fetch()) {
-            echo 'Email already in use';
-        } else {
-            // Hash the password before storing it
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            
-            // Insert new user into database
-            $stmt = $db->prepare('INSERT INTO user (email, pass) VALUES (:email, :password)');
-            $stmt->execute(['email' => $email, 'password' => $hashed_password]);
-            
-            // Redirect to login page after successful registration
-            header('Location: login.php');
-            exit;
-        }
-    } else {
-        // Display error message if passwords do not match
-        echo 'Passwords do not match';
     }
 }
 
 // Close database connection
 $db = null;
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -131,7 +97,7 @@ $db = null;
                     </fieldset>
                     <button type="submit" name="login" class="btn-login">Login</button>
                     <div class="btn-desc">
-                        
+                        <!-- The Book Now link will be merged with the login button automatically after login -->
                     </div>
                 </form>
             </div>

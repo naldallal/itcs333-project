@@ -71,11 +71,11 @@ try {
     <header>
         <h1>Room Booking System</h1>
         <nav>
-            <a href="building_map.php">IT college Map</a>
-            <a href="filter_page.php">Filter</a>
+            <a href="building_map.php?id=<?= $_SESSION['user_id'] ?>">IT college Map</a>
+            <a href="filter_page.php?id=<?= $_SESSION['user_id'] ?>">Filter</a>
             <a href="#room_details" class="active">Room</a>
-            <a href="#services">Services</a>
-            <a href="#contact">Contact</a>
+            <a href="userprofile2.php">User Profile</a>
+            <a href="logout.php">Log out</a>
         </nav>
     </header>
 
