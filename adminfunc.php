@@ -83,11 +83,107 @@ function get_total_rooms(){
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     return $result['COUNT(*)'];
 }
-function get_pending_requests(){
+function get_total_requests(){
     global $pdo;
     $stmt = $pdo->query("SELECT COUNT(*) FROM user WHERE role='pending'");
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     return $result['COUNT(*)'];
 }
+function get_pending_requests(){
+    global $pdo;
+    $stmt = $pdo->query("SELECT * FROM user WHERE role='pending'");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+// if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+//     $action = $_POST['action'];
+//     $userId = $_POST['id'];
+
+//     // Database connection
+//     $conn = new mysqli("localhost", "username", "password", "my_db");
+
+//     // Check connection
+//     if ($conn->connect_error) {
+//         die("Connection failed: " . $conn->connect_error);
+//     }
+
+//     if ($action === 'approve') {
+//         $sql = "UPDATE users SET role = 'admin' WHERE id = ?";
+//     } else if ($action === 'disapprove') {
+//         $sql = "UPDATE users SET role = 'user' WHERE id = ?";
+//     }
+
+//     $stmt = $conn->prepare($sql);
+//     $stmt->bind_param("i", $userId);
+    
+//     if ($stmt->execute()) {
+//         echo "Success";
+//     } else {
+//         echo "Error: " . $conn->error;
+//     }
+
+//     $stmt->close();
+//     $conn->close();
+// }
+
+if (isset($_POST['edit_role'])) {
+    $action = $_POST['action'];
+    $userId = $_POST['id'];
+
+    // Ensure the action is either 'admin' or 'user'
+    if (in_array($action, ['admin', 'user'])) {
+        // Database connection
+        global $pdo;
+        $statement = $pdo->prepare("UPDATE user SET role = ? WHERE id = ?");
+        $result = $statement->execute([$action, $userId]);
+
+        if ($result) {
+            echo "Role updated successfully.";
+        } else {
+            echo "Error updating role.";
+        }
+    } else {
+        echo "Invalid action.";
+    }
+}
+
+
+// if (isset($_POST['edit_role'])) {
+//     $action = $_POST['action'];
+//     $userId = $_POST['id'];
+
+//     // Database connection
+//     global $pdo;
+//     $statement = $pdo->prepare("UPDATE user SET  role = ? WHERE id = ?");
+//     $statement->execute([ $action, $userId]);
+    // // return $result['COUNT(*)'];
+    // // Check connection
+    // if ($conn->connect_error) {
+    //     die("Connection failed: " . $conn->connect_error);
+    // }
+
+    // if ($action === 'approve') {
+    //     $sql = "UPDATE users SET role = 'admin' WHERE id = ?";
+    // } else if ($action === 'disapprove') {
+    //     $sql = "UPDATE users SET role = 'user' WHERE id = ?";
+    // }
+
+    // $stmt = $conn->prepare($sql);
+    // $stmt->bind_param("i", $userId);
+
+    // if ($stmt->execute()) {
+    //     echo "Role updated successfully.";
+    // } else {
+    //     echo "Error: " . $conn->error;
+    // }
+
+    // $stmt->close();
+    // $conn->close();
+
 
 ?>
+
+
+// $pending_count = count_pending_requests();
+// $pending_requests = get_pending_requests();
+
+

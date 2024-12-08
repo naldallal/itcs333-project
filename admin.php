@@ -37,6 +37,13 @@
         }
     </style>
     <script>
+         function showPendingRequests() {
+            document.getElementById('rModal').style.display = 'block';
+        }
+
+        function closerModal() {
+            document.getElementById('rModal').style.display = 'none';
+        }
         function renderPieChart(data) {
             var ctx = document.getElementById('myPieChart').getContext('2d');
             new Chart(ctx, {
@@ -159,11 +166,52 @@
                 </span>
                 <span class="dashboard-item">
                     <h3>
-                        Pending Requests:<br/> <?php echo get_pending_requests(); ?>
+                        Pending Requests:<br/> 
+                    <span class="dashboard-item" onclick="showPendingRequests()">
+                    <?php echo get_total_requests(); ?>
+                    </span>
                     </h3>
                 </span>
                 </span>
              </div>
+             <div id="rModal" class="modal">
+        <div class="modal-content">
+        <span onclick="closerModal(this)" style="float:right; cursor:pointer;">&times;</span>
+        <h2>Pending Requests</h2>
+            <table>
+                <tr>
+                    <th>User ID</th>
+                    <!-- <th>Username</th> -->
+                    <th>Email</th>
+                    <th>Action</th>
+                </tr>
+                <?php
+$pending_requests = get_pending_requests();
+foreach ($pending_requests as $request): 
+    echo "<tr>
+        <td>". $request['id']."</td>".
+        "<td>" . $request['email']. "</td>
+        <td>
+            <form method='POST'  style='display:inline;'>
+                <input type='hidden' name='id' value='". $request['id'] ."'>
+                <input type='hidden' name='action' value='admin'>
+                <button type='submit' name='edit_role'>Approve</button>
+            </form>
+            <form method='POST' style='display:inline;'>
+                <input type='hidden' name='id' value='". $request['id'] ."'>
+                <input type='hidden' name='action' value='user'>
+                <button type='submit' name='edit_role'>Disapprove</button>
+            </form>
+        </td>
+    </tr>";
+endforeach;
+?>
+
+                
+            </table>
+        </div>
+    </div>
+
 
 
         </section>
