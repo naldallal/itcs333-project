@@ -1,3 +1,17 @@
+<?php
+// Database connection
+$dsn = "mysql:host=localhost;dbname=my_db"; // Corrected the DSN syntax
+$username = "root";
+$password = "";
+$pdo = new PDO($dsn, $username, $password);
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Set error mode
+
+// Example of DELETE with prepared statement
+$sql = "DELETE FROM bookings WHERE booking_id = :booking_id"; // Correct table name to bookings
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(':booking_id', $booking_id); // Bind the parameter with type
+$stmt->execute();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,7 +61,9 @@
                             <td>" . htmlspecialchars($row['date']) . "</td>
                             <td>" . htmlspecialchars($row['timeslots']) . "</td>
                             <td>
-                             <a class='btn btn-primary btn-sm' href='cancel_booking.php?id=" . htmlspecialchars($row['booking_id']) . "'>Cancel</a>
+                            <form method='post'>
+                            <input type='hidden' name='booking_id' value='" . htmlspecialchars($row['booking_id']) . "'>
+                            <button type='submit' class='btn btn-danger btn-sm' name='cancel_book'>Delete</button>
                             </td>
                           </tr>";
                 }
