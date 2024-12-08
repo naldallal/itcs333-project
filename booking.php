@@ -212,8 +212,12 @@ function build_calendar($month, $year, $room_num) {
         // Define duration and cleanup times
         $duration = 60; // Duration of each slot in minutes
         $cleanup = 10; // Cleanup time in minutes
-        $start = "08:00"; // Start time
-        $end = "19:00"; // End time
+        $stmt = $pdo->query("SELECT available_from FROM rooms WHERE room_num = $room_num");
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $start = $result; // Start time
+        $stmt = $pdo->query("SELECT available_to FROM rooms WHERE room_num = $room_num");
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $end = $result; // End time
         $slots = timeslots($duration, $cleanup, $start, $end);
 
         echo '<div class="row">';
