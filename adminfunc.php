@@ -39,7 +39,7 @@ if (isset($_POST['add_room'])) {
         </script>"; 
         return; 
     }
-    $result = $pdo->query("INSERT INTO rooms (room_num, department,capacity,equipment,type) VALUES ('$room_num', '$department', $capacity, '$equipment','$type')");
+    $result = $pdo->query("INSERT INTO rooms (room_num, department,capacity,equipment,type,available_from,available_to) VALUES ('$room_num', '$department', $capacity, '$equipment','$type','$available_from','$available_to')");
     // echo "Room added successfully!";
     // get_table($department);
 }
