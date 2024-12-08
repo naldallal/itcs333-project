@@ -185,3 +185,9 @@ footer p {
         font-size:13px;
     }
 }
+
+.empty-room {
+    height: 40px; /* Adjust the height as needed */
+    background-color: transparent; /* Optional: Makes it invisible */
+    margin: 4px 0; /* Optional: Adds some space */
+}

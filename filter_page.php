@@ -1,42 +1,48 @@
 <?php
 try {
-    $db = new PDO("mysql:host=localhost;dbname=roomsdetailsdatabase", "root", "");
+    $db = new PDO("mysql:host=localhost;dbname=my_db", "root", "");
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $query = "SELECT rooms.*, sections.section_name AS department_name 
-            FROM rooms
-            JOIN sections ON rooms.section_id = sections.section_id
-            WHERE 1"; 
+    $query = "SELECT * FROM rooms WHERE 1=1";  // Start with a generic query
 
     $filters = [];
 
-    if (isset($_GET['maxCapacity']) && is_array($_GET['maxCapacity'])) {
-        $selectedCapacities = $_GET['maxCapacity'];
+    // Max Capacity Filter
+    if (isset($_GET['capacity']) && is_array($_GET['capacity'])) {
+        $selectedCapacities = $_GET['capacity'];
         $myList = implode(',', array_fill(0, count($selectedCapacities), '?'));
-        $query .= " AND rooms.max_capacity IN ($myList)";
+        $query .= " AND rooms.capacity IN ($myList)";
         $filters = array_merge($filters, $selectedCapacities); 
     }
 
+    // Department Filter
     if (isset($_GET['department']) && is_array($_GET['department'])) {
         $selectedDepartments = $_GET['department'];
         $myList = implode(',', array_fill(0, count($selectedDepartments), '?'));
-        $query .= " AND section_name IN ($myList)";
+        $query .= " AND department IN ($myList)";
         $filters = array_merge($filters, $selectedDepartments); 
     }
 
-    if (isset($_GET['roomType']) && is_array($_GET['roomType'])) {
-        $selectedRoomTypes = $_GET['roomType'];
+    // Room Type Filter
+    if (isset($_GET['type']) && is_array($_GET['type'])) {
+        $selectedRoomTypes = $_GET['type'];
         $myList = implode(',', array_fill(0, count($selectedRoomTypes), '?'));
-        $query .= " AND rooms.room_type IN ($myList)";
+        $query .= " AND rooms.type IN ($myList)";
         $filters = array_merge($filters, $selectedRoomTypes); 
     }
 
-    if (isset($_GET['EquipmentList']) && is_array($_GET['EquipmentList'])) {
-        $selectedEquipments = $_GET['EquipmentList'];
+    // Equipment List Filter (Ensuring all selected equipment is present in the room)
+    if (isset($_GET['equipment']) && is_array($_GET['equipment'])) {
+        $selectedEquipments = $_GET['equipment'];
+        $query .= " AND (";  // Start a new condition group for equipment filters
+        $equipmentFilters = [];
         foreach ($selectedEquipments as $equipment) {
-            $query .= " AND rooms.equipment_list LIKE ?";
-            $filters[] = "%$equipment%"; 
+            // Check if each equipment is present in the room's equipment
+            $equipmentFilters[] = "rooms.equipment LIKE ?";
+            $filters[] = "%$equipment%";
         }
+        $query .= implode(' AND ', $equipmentFilters);  // Ensure all selected equipment is in the room
+        $query .= ")";  // Close the condition group
     }
 
     $stmt = $db->prepare($query);
@@ -49,9 +55,6 @@ try {
 
     $roomlist = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $departments_stmt = $db->query("SELECT * FROM sections");
-    $departments = $departments_stmt->fetchAll(PDO::FETCH_ASSOC);
-
 } catch (PDOException $e) {
     echo "Connection failed: " . $e->getMessage();
     exit();
@@ -63,10 +66,8 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css_filter_page.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
     <title>Filter Rooms</title>
-    
 </head>
 <style>
     
@@ -361,24 +362,23 @@ footer p {
 </style>
 <body>
 <header>
-        <h1>Room Booking System</h1>
-        <nav>
-            <a href="building_map.php">IT college Map</a>
-            <a href="filter_page.php" class="active">Filter</a>
-            <a href="#services">Services</a>
-            <a href="#contact">Contact</a>
-        </nav>
-    </header>
+    <h1>Room Booking System</h1>
+    <nav>
+        <a href="building_map.php">IT college Map</a>
+        <a href="filter_page.php" class="active">Filter</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact</a>
+    </nav>
+</header>
 
-    
-    <hr>
-    <div class="change-view-container">
-    <a href="building_map.php">change view</a>
-    </div>
-    <hr>
+<hr>
+<div class="change-view-container">
+    <a href="building_map.php">Change View</a>
+</div>
+<hr>
 
-    <main>
-    <form action="" method="GET">
+<main>
+<form action="" method="GET">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -388,16 +388,15 @@ footer p {
                         <button type="submit" class="btn btn-primary btn-sm float-end">Search</button>
                     </div>
                     <div class="card-body-filter">
-                        <!-- Max Capacity Filter -->
-                        <div class="filter-dropdown">
+                    <div class="filter-dropdown">
                             <h6>Max Capacity</h6>
                             <div class="dropdown-container">
                                 <button type="button" class="dropdown-btn">Select Max Capacity</button>
                                 <div class="dropdown-content">
-                                    <label><input type="checkbox" name="maxCapacity[]" value="20" <?= in_array('20', $_GET['maxCapacity'] ?? []) ? 'checked' : '' ?>> 20 persons</label><br>
-                                    <label><input type="checkbox" name="maxCapacity[]" value="30" <?= in_array('30', $_GET['maxCapacity'] ?? []) ? 'checked' : '' ?>> 30 persons</label><br>
-                                    <label><input type="checkbox" name="maxCapacity[]" value="40" <?= in_array('40', $_GET['maxCapacity'] ?? []) ? 'checked' : '' ?>> 40 persons</label><br>
-                                    <label><input type="checkbox" name="maxCapacity[]" value="50" <?= in_array('50', $_GET['maxCapacity'] ?? []) ? 'checked' : '' ?>> 50 persons</label><br>
+                                    <label><input type="checkbox" name="capacity[]" value="20" <?= in_array('20', $_GET['capacity'] ?? []) ? 'checked' : '' ?>> 20 persons</label><br>
+                                    <label><input type="checkbox" name="capacity[]" value="30" <?= in_array('30', $_GET['capacity'] ?? []) ? 'checked' : '' ?>> 30 persons</label><br>
+                                    <label><input type="checkbox" name="capacity[]" value="40" <?= in_array('40', $_GET['capacity'] ?? []) ? 'checked' : '' ?>> 40 persons</label><br>
+                                    <label><input type="checkbox" name="capacity[]" value="50" <?= in_array('50', $_GET['capacity'] ?? []) ? 'checked' : '' ?>> 50 persons</label><br>
                                 </div>
                             </div>
                         </div>
@@ -408,9 +407,9 @@ footer p {
                             <div class="dropdown-container">
                                 <button type="button" class="dropdown-btn">Select Department</button>
                                 <div class="dropdown-content">
-                                    <?php foreach ($departments as $department): ?>
-                                        <label><input type="checkbox" name="department[]" value="<?= htmlspecialchars($department['section_name']) ?>" <?= in_array($department['section_name'], $_GET['department'] ?? []) ? 'checked' : '' ?>> <?= htmlspecialchars($department['section_name']) ?></label><br>
-                                    <?php endforeach; ?>
+                                    <label><input type="checkbox" name="department[]" value="IS" <?= in_array('IS', $_GET['department'] ?? []) ? 'checked' : '' ?>> Information Systems</label><br>
+                                    <label><input type="checkbox" name="department[]" value="CS" <?= in_array('CS', $_GET['department'] ?? []) ? 'checked' : '' ?>> Computer Science</label><br>
+                                    <label><input type="checkbox" name="department[]" value="CE" <?= in_array('CE', $_GET['department'] ?? []) ? 'checked' : '' ?>> Computer Engineering</label><br>
                                 </div>
                             </div>
                         </div>
@@ -421,10 +420,10 @@ footer p {
                             <div class="dropdown-container">
                                 <button type="button" class="dropdown-btn">Select Room Type</button>
                                 <div class="dropdown-content">
-                                    <label><input type="checkbox" name="roomType[]" value="lecture" <?= in_array('lecture', $_GET['roomType'] ?? []) ? 'checked' : '' ?>> Lecture</label><br>
-                                    <label><input type="checkbox" name="roomType[]" value="seminar" <?= in_array('seminar', $_GET['roomType'] ?? []) ? 'checked' : '' ?>> Seminar</label><br>
-                                    <label><input type="checkbox" name="roomType[]" value="lab" <?= in_array('lab', $_GET['roomType'] ?? []) ? 'checked' : '' ?>> Lab</label><br>
-                                    <label><input type="checkbox" name="roomType[]" value="meeting" <?= in_array('meeting', $_GET['roomType'] ?? []) ? 'checked' : '' ?>> Meeting</label><br>
+                                    <label><input type="checkbox" name="type[]" value="lecture" <?= in_array('lecture', $_GET['type'] ?? []) ? 'checked' : '' ?>> Lecture</label><br>
+                                    <label><input type="checkbox" name="type[]" value="seminar" <?= in_array('seminar', $_GET['type'] ?? []) ? 'checked' : '' ?>> Seminar</label><br>
+                                    <label><input type="checkbox" name="type[]" value="lab" <?= in_array('lab', $_GET['type'] ?? []) ? 'checked' : '' ?>> Lab</label><br>
+                                    <label><input type="checkbox" name="type[]" value="meeting" <?= in_array('meeting', $_GET['type'] ?? []) ? 'checked' : '' ?>> Meeting</label><br>
                                 </div>
                             </div>
                         </div>
@@ -435,10 +434,10 @@ footer p {
                             <div class="dropdown-container">
                                 <button type="button" class="dropdown-btn">Select Equipment</button>
                                 <div class="dropdown-content">
-                                    <label><input type="checkbox" name="EquipmentList[]" value="Whiteboard" <?= in_array('Whiteboard', $_GET['EquipmentList'] ?? []) ? 'checked' : '' ?>> Whiteboard</label><br>
-                                    <label><input type="checkbox" name="EquipmentList[]" value="Projector" <?= in_array('Projector', $_GET['EquipmentList'] ?? []) ? 'checked' : '' ?>> Projector</label><br>
-                                    <label><input type="checkbox" name="EquipmentList[]" value="Computer" <?= in_array('Computer', $_GET['EquipmentList'] ?? []) ? 'checked' : '' ?>> Computer</label><br>
-                                </div>
+                                    <label><input type="checkbox" name="equipment[]" value="Whiteboard" <?= in_array('Whiteboard', $_GET['equipment'] ?? []) ? 'checked' : '' ?>> Whiteboard</label><br>
+                                    <label><input type="checkbox" name="Eequipment[]" value="Projector" <?= in_array('Projector', $_GET['equipment'] ?? []) ? 'checked' : '' ?>> Projector</label><br>
+                                    <label><input type="checkbox" name="equipment[]" value="Computers" <?= in_array('Computers', $_GET['equipment'] ?? []) ? 'checked' : '' ?>> Computers</label><br>
+                                    </div>
                             </div>
                         </div>
 
@@ -457,14 +456,14 @@ footer p {
                 foreach ($roomlist as $room) {
                     echo "<div class='col-lg-4 col-md-6 col-12 mb-4'>
                             <div class='card'>
-                            <a href='single_room_details.php?room_id={$room['room_id']}' class='text-decoration-none'>
-                                <div class='card-body'>
-                                    <h5 class= 'card-title'>{$room['room_number']}</h5> 
-                                    <p class='card-text'><strong>Max Capacity:</strong> {$room['max_capacity']} persons</p> 
-                                    <p class='card-text'><strong>Department:</strong> {$room['department_name']}</p> 
-                                    <p class='card-text'><strong>Room Type:</strong> {$room['room_type']}</p> 
-                                    <p class='card-text'><strong>Equipment:</strong> {$room['equipment_list']}</p> 
-                                </div>
+                                <a href='single_room_details.php?room_num={$room['room_num']}' class='text-decoration-none'>
+                                    <div class='card-body'>
+                                        <h5 class='card-title'>{$room['room_num']}</h5> 
+                                        <p class='card-text'><strong>Max Capacity:</strong> {$room['capacity']} persons</p> 
+                                        <p class='card-text'><strong>Department:</strong> {$room['department']}</p> 
+                                        <p class='card-text'><strong>Room Type:</strong> {$room['type']}</p> 
+                                        <p class='card-text'><strong>Equipment:</strong> {$room['equipment']}</p> 
+                                    </div>
                                 </a>
                             </div>
                           </div>";
@@ -475,49 +474,39 @@ footer p {
             ?>
         </div>
     </div>
+</main>
 
-    </main>
-    <footer>
-        <nav>
-            <a href="#privacy">Privacy Policy</a>
-            <a href="#terms">Terms of Service</a>
-            <a href="#support">Support</a>
-        </nav>
-        <p>&copy; 2024 Room Booking System. All rights reserved.</p>
-    </footer>
-</body>
-</html>
-
+<footer>
+    <nav>
+        <a href="#privacy">Privacy Policy</a>
+        <a href="#terms">Terms of Service</a>
+        <a href="#support">Support</a>
+    </nav>
+    <p>&copy; 2024 Room Booking System. All rights reserved.</p>
+</footer>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Function to update dropdown button text with selected checkbox values
     function updateDropdownText(dropdown) {
         const selectedValues = [];
         const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]:checked');
-
-        // Get the labels of the selected checkboxes
         checkboxes.forEach(checkbox => {
             selectedValues.push(checkbox.parentElement.textContent.trim());
         });
-
-        // Update button text
         const button = dropdown.querySelector('.dropdown-btn');
         button.textContent = selectedValues.length > 0 ? selectedValues.join(', ') : 'Select options';
     }
 
-    // Attach change event to all checkboxes
-    const allCheckboxes = document.querySelectorAll('.dropdown-content input[type="checkbox"]');
-    allCheckboxes.forEach(checkbox => {
+    document.querySelectorAll('.dropdown-content input[type="checkbox"]').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             updateDropdownText(checkbox.closest('.dropdown-container'));
         });
     });
 
-    // Initialize dropdown text on page load (if checkboxes are pre-selected)
     document.querySelectorAll('.dropdown-container').forEach(dropdown => {
         updateDropdownText(dropdown);
     });
 });
-
 </script>
+</body>
+</html>

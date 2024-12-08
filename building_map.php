@@ -1,35 +1,45 @@
-<?php
+<?php 
 try {
-    // database connection
-    $db = new PDO("mysql:host=localhost;dbname=roomsdetailsdatabase", "root", "");
+    // Database connection
+    $db = new PDO("mysql:host=localhost;dbname=my_db", "root", "");
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    //room details and section names
-    $query = "SELECT r.room_id, r.section_id, r.room_number, s.section_name 
-              FROM rooms r
-              JOIN sections s ON r.section_id = s.section_id 
-              ORDER BY r.section_id, r.room_number";
+    // Room details and section names
+    $query = "SELECT * FROM rooms";
     $stmt = $db->prepare($query);
     $stmt->execute(); 
 
-    // Organize rooms by section and level
-    $sections = [];
+    // Initialize the array to group rooms by department and level
+    $rooms_by_section = [
+        'IS' => ['upper' => [], 'level2' => [], 'ground' => []],
+        'CS' => ['upper' => [], 'level2' => [], 'ground' => []],
+        'CE' => ['upper' => [], 'level2' => [], 'ground' => []],
+    ];
+
+    // Fetch rooms and organize by department and level
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        // Determine the level based on the room_number
-        $room_number = $row['room_number'];
-        if (substr($room_number, 0, 1) == '2') {
-            $level = 'upper';  // Upper level starts with '2'
-        } elseif (substr($room_number, 0, 1) == '1') {
-            $level = 'level2'; // Level 2 starts with '1'
-        } else {
-            $level = 'ground'; // Ground level starts with '0'
+        $room_department = $row['department'];
+        $room_number = $row['room_num'];
+    
+        // Check if the room number has less than 4 digits
+        if (strlen($room_number) < 4) {
+            // Pad the room number with leading zeros to make it 4 digits
+            $room_number = str_pad($room_number, 4, "0", STR_PAD_LEFT);
         }
-
-        // Organize the rooms by section, level, and store section name
-        $sections[$row['section_id']]['section_name'] = $row['section_name']; // Store section name
-        $sections[$row['section_id']][$level][] = $row;  // Store the full row
+    
+        // Determine the level based on the room number
+        if (substr($room_number, 0, 1) == '2') {
+            $level = 'upper';
+        } elseif (substr($room_number, 0, 1) == '1') {
+            $level = 'level2';
+        } else {
+            $level = 'ground';
+        }
+    
+        // Organize rooms by department and level
+        $rooms_by_section[$room_department][$level][] = ['room_num' => $room_number];
     }
-
+    
 } catch (PDOException $e) {
     echo "Connection failed: " . $e->getMessage();
     exit();
@@ -44,12 +54,11 @@ try {
     <link rel="stylesheet" href="css_building_map.css">
     <title>IT College Map</title>
 </head>
-
 <body>
     <header>
         <h1>Room Booking System</h1>
         <nav>
-            <a href="building_map.php" class="active">IT college Map</a>
+            <a href="building_map.php" class="active">IT College Map</a>
             <a href="filter_page.php">Filter</a>
             <a href="#services">Services</a>
             <a href="#contact">Contact</a>
@@ -58,105 +67,124 @@ try {
 
     <hr>
     <div class="change-view-container">
-        <a href="index.php">change view</a>
+        <a href="filter_page.php">Change View</a>
     </div>
     <hr>
 
     <div class="building">
         <?php
         // Iterate over each section
-        foreach ($sections as $section_id => $section_data) { 
-            $section_name = $section_data['section_name']; // Get the section name
-        ?>
-            <div class="section section-<?=$section_id?>">
-                <div class="section-title"> 
-                    <p> <?=$section_name?> </p> <!-- Display section name -->
+        foreach ($rooms_by_section as $section_id => $section_data) {
+            $section_name = strtoupper($section_id); // Get the section name (IS, CS, CE)
+            ?>
+            <div class="section section-<?= strtolower($section_id) ?>">
+                <div class="section-title">
+                    <p><?= $section_name ?></p> <!-- Display section name -->
                 </div>
-
+    
                 <div class="columns">
                     <!-- Column 1: Upper, Level 2, Ground (First Half of Rooms) -->
                     <div class="column">
-                        <?php
-                        // Upper level (first half)
-                        if (isset($section_data['upper'])) {
+                        <!-- Upper level (first half) -->
+                        <?php if (isset($section_data['upper']) && count($section_data['upper']) > 0) {
                             $upperRooms = $section_data['upper'];
-                            $half = ceil(count($upperRooms) / 2); //round number up to the nearest integer
+                            $half = ceil(count($upperRooms) / 2); // Round number up to the nearest integer
                             $upperFirstHalf = array_slice($upperRooms, 0, $half);
                             foreach ($upperFirstHalf as $room) { ?>
                                 <div class="room">
-                                    <a href="single_room_details.php?room_id=<?= $room['room_id'] ?>" class="room-link">Room <?= $room['room_number'] ?></a>
+                                    <a href="single_room_details.php?room_num=<?= $room['room_num'] ?>" class="room-link">Room <?= $room['room_num'] ?></a>
                                 </div>
                             <?php }
-                        }
-                        ?> <hr> <?php
-
-                        // Level 2 (first half)
-                        if (isset($section_data['level2'])) {
+                        } else { ?>
+                            <p>No rooms available in Upper level</p>
+                        <?php } ?>
+                        <hr> 
+                        
+                        <!-- Level 2 (first half) -->
+                        <?php if (isset($section_data['level2']) && count($section_data['level2']) > 0) {
                             $level2Rooms = $section_data['level2'];
-                            $half = ceil(count($level2Rooms) / 2); //round number up to the nearest integer
+                            $half = ceil(count($level2Rooms) / 2);
                             $level2FirstHalf = array_slice($level2Rooms, 0, $half);
                             foreach ($level2FirstHalf as $room) { ?>
                                 <div class="room">
-                                    <a href="single_room_details.php?room_id=<?= $room['room_id'] ?>" class="room-link">Room <?= $room['room_number'] ?></a>
+                                    <a href="single_room_details.php?room_num=<?= $room['room_num'] ?>" class="room-link">Room <?= $room['room_num'] ?></a>
                                 </div>
                             <?php }
-                        } ?> <hr> <?php
-
-                        // Ground level (first half)
-                        if (isset($section_data['ground'])) {
+                        } else { ?>
+                            <p>No rooms available in Level 2</p>
+                        <?php } ?>
+                        <hr> 
+                        
+                        <!-- Ground level (first half) -->
+                        <?php if (isset($section_data['ground']) && count($section_data['ground']) > 0) {
                             $groundRooms = $section_data['ground'];
-                            $half = ceil(count($groundRooms) / 2); //round number up to the nearest integer
+                            $half = ceil(count($groundRooms) / 2);
                             $groundFirstHalf = array_slice($groundRooms, 0, $half);
                             foreach ($groundFirstHalf as $room) { ?>
                                 <div class="room">
-                                    <a href="single_room_details.php?room_id=<?= $room['room_id'] ?>" class="room-link">Room <?= $room['room_number'] ?></a>
+                                    <a href="single_room_details.php?room_num=<?= $room['room_num'] ?>" class="room-link">Room <?= $room['room_num'] ?></a>
                                 </div>
                             <?php }
-                        } 
-
-                        ?>
+                        } else { ?>
+                            <p>No rooms available in Ground level</p>
+                        <?php } ?>
                     </div>
-
+    
                     <!-- Column 2: Upper, Level 2, Ground (Second Half of Rooms) -->
                     <div class="column">
-                        <?php
-                        // Upper level (second half)
-                        if (isset($section_data['upper'])) {
+                        <!-- Upper level (second half) -->
+                        <?php if (isset($section_data['upper']) && count($section_data['upper']) > 0) {
                             $upperRooms = $section_data['upper'];
-                            $half = ceil(count($upperRooms) / 2); //round number up to the nearest integer
+                            $half = ceil(count($upperRooms) / 2);
                             $upperSecondHalf = array_slice($upperRooms, $half);
                             foreach ($upperSecondHalf as $room) { ?>
                                 <div class="room">
-                                    <a href="single_room_details.php?room_id=<?= $room['room_id'] ?>" class="room-link">Room <?= $room['room_number'] ?></a>
+                                    <a href="single_room_details.php?room_num=<?= $room['room_num'] ?>" class="room-link">Room <?= $room['room_num'] ?></a>
                                 </div>
                             <?php }
-                        }?> <hr> <?php
-
-
-                        // Level 2 (second half)
-                        if (isset($section_data['level2'])) {
+                            if (count($upperRooms) % 2 != 0) {
+                                echo '<div class="empty-room"></div>';  // Empty space to balance layout
+                            }
+                        } else { ?>
+                            <p>No rooms available in Upper level</p>
+                        <?php } ?>
+                        <hr> 
+                        
+                        <!-- Level 2 (second half) -->
+                        <?php if (isset($section_data['level2']) && count($section_data['level2']) > 0) {
                             $level2Rooms = $section_data['level2'];
-                            $half = ceil(count($level2Rooms) / 2); //round number up to the nearest integer
+                            $half = ceil(count($level2Rooms) / 2);
                             $level2SecondHalf = array_slice($level2Rooms, $half);
                             foreach ($level2SecondHalf as $room) { ?>
                                 <div class="room">
-                                    <a href="single_room_details.php?room_id=<?= $room['room_id'] ?>" class="room-link">Room <?= $room['room_number'] ?></a>
+                                    <a href="single_room_details.php?room_num=<?= $room['room_num'] ?>" class="room-link">Room <?= $room['room_num'] ?></a>
                                 </div>
                             <?php }
-                        }?> <hr> <?php
-
-
-                        // Ground level (second half)
-                        if (isset($section_data['ground'])) {
+                            if (count($level2Rooms) % 2 != 0) {
+                                echo '<div class="empty-room"></div>';  // Empty space to balance layout
+                            }
+                
+                        } else { ?>
+                            <p>No rooms available in Level 2</p>
+                        <?php } ?>
+                        <hr> 
+                        
+                        <!-- Ground level (second half) -->
+                        <?php if (isset($section_data['ground']) && count($section_data['ground']) > 0) {
                             $groundRooms = $section_data['ground'];
-                            $half = ceil(count($groundRooms) / 2); //round number up to the nearest integer
+                            $half = ceil(count($groundRooms) / 2);
                             $groundSecondHalf = array_slice($groundRooms, $half);
                             foreach ($groundSecondHalf as $room) { ?>
                                 <div class="room">
-                                    <a href="single_room_details.php?room_id=<?= $room['room_id'] ?>" class="room-link">Room <?= $room['room_number'] ?></a>
+                                    <a href="single_room_details.php?room_num=<?= $room['room_num'] ?>" class="room-link">Room <?= $room['room_num'] ?></a>
                                 </div>
                             <?php }
-                        }?> 
+                            if (count($groundRooms) % 2 != 0) {
+                                echo '<div class="empty-room"></div>';  // Empty space to balance layout
+                            }
+                        } else { ?>
+                            <p>No rooms available in Ground level</p>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -164,6 +192,7 @@ try {
     </div>
 
 </body>
+
 
 <footer>
     <nav>
