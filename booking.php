@@ -214,10 +214,16 @@ function build_calendar($month, $year, $room_num) {
         $cleanup = 10; // Cleanup time in minutes
         $stmt = $pdo->query("SELECT available_from FROM rooms WHERE room_num = $room_num");
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        $start = $result; // Start time
+        $stmt = $pdo->query("SELECT available_from FROM rooms WHERE room_num = $room_num");
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $start = new DateTime($result['available_from']); // Start time
+
         $stmt = $pdo->query("SELECT available_to FROM rooms WHERE room_num = $room_num");
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        $end = $result; // End time
+        $end = new DateTime($result['available_to']); // End time
+
+        $slots = timeslots($duration, $cleanup, $start, $end);
+
         $slots = timeslots($duration, $cleanup, $start, $end);
 
         echo '<div class="row">';
