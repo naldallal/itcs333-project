@@ -1,5 +1,5 @@
-\\project ITCS333
-Names:
+\*project ITCS333
+\*Names:
 fatima mohammed jahrami 202103345 sec8
 Noor Shafeeq Ashoor 202210100 sec8
 Noor Zaher Aldallal 202210337 sec8
