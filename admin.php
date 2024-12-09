@@ -162,7 +162,7 @@ if (isset($_SESSION['user_id'])) {
             <ul>
                 <li><a href="#dashboard">Dashboard</a></li>
                 <li><a href="#rooms">Room Management</a></li>
-                <li><a href="#schedule">Schedule Management</a></li>
+                <li><a href="#rooms">Schedule Management</a></li>
             </ul>
         </nav>
     </header>
@@ -259,7 +259,7 @@ if (isset($_SESSION['user_id'])) {
                     <span onclick="closeEdit('IS',this)" style="float:right; cursor:pointer;">&times;</span>
                     <h2>Edit Room in IS Department </h2>
                     <form method="post">
-                        <label for="room_num">Room Number:</label>
+                        <label for="room_num">Room Number:</label><br/>
                         <input type="number" id="eroom_num" name="room_num" disabled><br>
                         <input type="hidden" id="room_num" name="room_num">
                         <label for="type">Room Type:</label><br/>
@@ -272,7 +272,7 @@ if (isset($_SESSION['user_id'])) {
                             <input type="radio" id="Meeting" name="type" value="Meeting" required>
                             <label for="Meeting">Meeting</label><br>
                             </radio>
-                        <label for="capacity">Capacity:</label>
+                        <label for="capacity">Capacity:</label><br/>
                         <input type="number" id="capacity" name="capacity" required><br>
                         <label for="equipment">Equipment:</label><br/>
                         <checkbox>
@@ -296,7 +296,7 @@ if (isset($_SESSION['user_id'])) {
                     <span onclick="closeDelete('IS',this)" style="float:right; cursor:pointer;">&times;</span>
                     <h2>Delete Room in IS Department </h2>
                     <form method="post">
-                    <label for="delete-room_num">Room Number:</label>
+                    <label for="delete-room_num">Room Number:</label><br/>
                     <input type="hidden" id="ddnumroom" name="ddnumroom">
                     <input type="number" id="delete-room_num" name="room_num" disabled><br>
                     <input type="hidden" name="department" value="IS">
@@ -309,7 +309,7 @@ if (isset($_SESSION['user_id'])) {
                     <span onclick="closeModal('IS')" style="float:right; cursor:pointer;">&times;</span>
                     <h2>Add Room for IS Department</h2>
                     <form method="post">
-                    <label for="room_num">Room Number:</label>
+                    <label for="room_num">Room Number:</label><br/>
                         <input type="number" id="room_num" name="room_num" required><br>
                         <label for="type">Room Type:</label><br/>
                             <input type="radio" id="Lecture" name="type" value="Lecture" required>
@@ -321,7 +321,7 @@ if (isset($_SESSION['user_id'])) {
                             <input type="radio" id="Meeting" name="type" value="Meeting" required>
                             <label for="Meeting">Meeting</label><br>
                             </radio>
-                        <label for="capacity">Capacity:</label>
+                        <label for="capacity">Capacity:</label><br/>
                         <input type="number" id="capacity" name="capacity" required><br>
                         <label for="equipment">Equipment:</label><br/>
                         <checkbox>
@@ -330,7 +330,7 @@ if (isset($_SESSION['user_id'])) {
                             <input type="checkbox" id="equipment" name="equipment[]" value="Computers">Computers<br/>
                         </checkbox>   
                         <label for="available_from">Available From  </label>
-                        <input type="time" name="available_from" value="08:00" requierd>
+                        <input type="time" name="available_from" value="08:00" requierd><br/>
                         <label for="available_to">Available To  </label>
                         <input type="time" name="available_to" value="18:00" requierd>                               
                         <input type="hidden" name="department" value="IS">
@@ -370,7 +370,7 @@ if (isset($_SESSION['user_id'])) {
                     <span onclick="closeEdit('CS',this)" style="float:right; cursor:pointer;">&times;</span>
                     <h2>Edit Room in CS Department </h2>
                     <form method="post">
-                        <label for="room_num">Room Number:</label>
+                        <label for="room_num">Room Number:</label><br/>
                         <input type="number" id="eroom_num" name="room_num" disabled><br>
                         <input type="hidden" id="room_num" name="room_num">
                         <label for="type">Room Type:</label><br/>
@@ -383,7 +383,7 @@ if (isset($_SESSION['user_id'])) {
                             <input type="radio" id="Meeting" name="type" value="Meeting" required>
                             <label for="Meeting">Meeting</label><br>
                             </radio>
-                        <label for="capacity">Capacity:</label>
+                        <label for="capacity">Capacity:</label><br/>
                         <input type="number" id="capacity" name="capacity" required><br>
                         <label for="equipment">Equipment:</label><br/>
                         <checkbox>
@@ -419,7 +419,7 @@ if (isset($_SESSION['user_id'])) {
                     <span onclick="closeModal('CS')" style="float:right; cursor:pointer;">&times;</span>
                     <h2>Add Room for CS Department</h2>
                     <form method="post">
-                    <label for="room_num">Room Number:</label>
+                    <label for="room_num">Room Number:</label><br/>
                         <input type="number" id="room_num" name="room_num" required><br>
                         <label for="type">Room Type:</label><br/>
                             <input type="radio" id="Lecture" name="type" value="Lecture" required>
@@ -431,7 +431,7 @@ if (isset($_SESSION['user_id'])) {
                             <input type="radio" id="Meeting" name="type" value="Meeting" required>
                             <label for="Meeting">Meeting</label><br>
                             </radio>
-                        <label for="capacity">Capacity:</label>
+                        <label for="capacity">Capacity:</label><br/>
                         <input type="number" id="capacity" name="capacity" required><br>
                         <label for="equipment">Equipment:</label><br/>
                         <checkbox>
@@ -440,7 +440,7 @@ if (isset($_SESSION['user_id'])) {
                             <input type="checkbox" id="equipment" name="equipment[]" value="Computers">Computers<br/>
                         </checkbox>
                         <label for="available_from">Available From  </label>
-                        <input type="time" name="available_from" value="08:00" requierd>
+                        <input type="time" name="available_from" value="08:00" requierd><br/>
                         <label for="available_to">Available To  </label>
                         <input type="time" name="available_to" value="18:00" requierd>                                    
                         <input type="hidden" name="department" value="CS">
@@ -480,7 +480,7 @@ if (isset($_SESSION['user_id'])) {
                     <span onclick="closeEdit('CE',this)" style="float:right; cursor:pointer;">&times;</span>
                     <h2>Edit Room in CE Department </h2>
                     <form method="post">
-                        <label for="room_num">Room Number:</label>
+                        <label for="room_num">Room Number:</label><br/>
                         <input type="number" id="eroom_num" name="room_num" disabled><br>
                         <input type="hidden" id="room_num" name="room_num">
                         <label for="type">Room Type:</label><br/>
@@ -493,7 +493,7 @@ if (isset($_SESSION['user_id'])) {
                             <input type="radio" id="Meeting" name="type" value="Meeting" required>
                             <label for="Meeting">Meeting</label><br>
                             </radio>
-                        <label for="capacity">Capacity:</label>
+                        <label for="capacity">Capacity:</label><br/>
                         <input type="number" id="capacity" name="capacity" required><br>
                         <label for="equipment">Equipment:</label><br/>
                         <checkbox>
@@ -528,7 +528,7 @@ if (isset($_SESSION['user_id'])) {
                     <span onclick="closeModal('CE')" style="float:right; cursor:pointer;">&times;</span>
                     <h2>Add Room for Computer Engineering Department</h2>
                     <form method="post">
-                    <label for="room_num">Room Number:</label>
+                    <label for="room_num">Room Number:</label><br/>
                         <input type="number" id="room_num" name="room_num" required><br>
                         <label for="type">Room Type:</label><br/>
                             <input type="radio" id="Lecture" name="type" value="Lecture" required>
@@ -540,7 +540,7 @@ if (isset($_SESSION['user_id'])) {
                             <input type="radio" id="Meeting" name="type" value="Meeting" required>
                             <label for="Meeting">Meeting</label><br>
                             </radio>
-                        <label for="capacity">Capacity:</label>
+                        <label for="capacity">Capacity:</label><br/>
                         <input type="number" id="capacity" name="capacity" required><br>
                         <label for="equipment">Equipment:</label><br/>
                         <checkbox>
@@ -549,7 +549,7 @@ if (isset($_SESSION['user_id'])) {
                             <input type="checkbox" id="equipment" name="equipment[]" value="Computers">Computers<br/>
                         </checkbox>
                         <label for="available_from">Available From  </label>
-                        <input type="time" name="available_from" value="08:00" requierd>
+                        <input type="time" name="available_from" value="08:00" requierd><br/>
                         <label for="available_to">Available To  </label>
                         <input type="time" name="available_to" value="18:00" requierd>                                  
                         <input type="hidden" name="department" value="CE">
