@@ -1,8 +1,10 @@
-#project ITCS333
-##Names:
-###fatima mohammed jahrami 202103345 sec8
-###Noor Shafeeq Ashoor 202210100 sec8
-###Noor Zaher Aldallal 202210337 sec8
-###Tayef Nabil Shehada 202101300 sec8
-###Maryam Zakareya Alhasan 202103548 sec2
+# ITCS333 Project
+
+## Team Members
+
+* Fatima Mohammed Jahrami (202103345) - Section 8
+* Noor Shafeeq Ashoor (202210100) - Section 8
+* Noor Zaher Aldallal (202210337) - Section 8
+* Tayef Nabil Shehada (202101300) - Section 8
+* Maryam Zakareya Alhasan (202103548) - Section 2
 
