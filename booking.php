@@ -3,7 +3,7 @@
 session_start();
 if (isset($_SESSION['user_id'])) {
     $userId = $_SESSION['user_id'];
-    echo $userId;
+    
     global $pdo; 
     $pdo = new PDO('mysql:host=localhost;dbname=my_db;charset=utf8mb4', 'root');
     $stmt = $pdo->query("SELECT * FROM user WHERE id = '$userId'");

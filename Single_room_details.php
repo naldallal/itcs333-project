@@ -2,7 +2,7 @@
 session_start();
 if (isset($_SESSION['user_id'])) {
     $userId = $_SESSION['user_id'];
-    echo $userId;
+    
     global $pdo; 
     $pdo = new PDO('mysql:host=localhost;dbname=my_db;charset=utf8mb4', 'root');
     $stmt = $pdo->query("SELECT * FROM user WHERE id = '$userId'");
@@ -107,7 +107,7 @@ try {
                 <div class="card-content">
                     <!-- Room Image Section (on the right) -->
                     <div class="room-image">
-                        <img src="images/try_image.jpg" alt="Room Image">
+                        <img src="images/room_image.jpg" alt="Room Image">
                     </div>
 
                     <!-- Room Description Section (on the left) -->
